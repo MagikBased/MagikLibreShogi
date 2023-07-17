@@ -1,11 +1,35 @@
 extends Sprite2D
 
+enum PieceType{
+	King,
+	Pawn,
+	Lance,
+	Knight,
+	Silver,
+	Gold,
+	Bishop,
+	Rook
+}
+enum Player{
+	Sente,
+	Gote
+}
 
-# Called when the node enters the scene tree for the first time.
+#var boardScale = $Board.BoardSprite.squareSize
+var globalPieceScale = 1
+
+@export var pieceType = PieceType.Pawn
+@export var pieceOwner = Player.Sente
+@export var promoted: bool = false
+
+var selected: bool = false
+
 func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+	scale *= globalPieceScale
+	set_piece_type()
+	if pieceOwner == Player.Gote:
+		rotation_degrees += 180
+		
+func set_piece_type():
 	pass
+

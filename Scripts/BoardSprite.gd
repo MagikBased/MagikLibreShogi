@@ -6,7 +6,9 @@ var squareSize = (texture.get_width()) / boardSize.x
 var gridColor = Color(0,0,0) # Change this to set the color of the grid lines
 var circleRadius = squareSize * 0.15
 var circleColor = Color(0,0,0)
-	
+#var font = Font
+#signal boardScale
+
 func _ready():
 	pass
 
@@ -17,11 +19,13 @@ func draw_grid():
 	for y in range(1, boardSize.y):
 		var yPosition = y * squareSize
 		draw_line(Vector2(0,yPosition), Vector2(squareSize * boardSize.y, yPosition), gridColor, lineSize)
-	print(squareSize)
+	
 	draw_circle(Vector2(squareSize*3,squareSize*3),circleRadius, circleColor)
 	draw_circle(Vector2(squareSize*3,squareSize*6),circleRadius, circleColor)
 	draw_circle(Vector2(squareSize*6,squareSize*3),circleRadius, circleColor)
 	draw_circle(Vector2(squareSize*6,squareSize*6),circleRadius, circleColor)
+	
+	#draw_string()
 	
 func _draw():
 	draw_grid()
