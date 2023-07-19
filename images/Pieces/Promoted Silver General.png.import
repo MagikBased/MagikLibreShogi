@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bivf1qooh5i2"
-path="res://.godot/imported/Promoted Silver General.png-7f62402257dbed5f21de2cecce47a490.ctex"
+path="res://.godot/imported/Promoted Silver General.png-d93343d463810cfbb71c088bd874a959.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/Pieces/Promoted Silver General.png"
-dest_files=["res://.godot/imported/Promoted Silver General.png-7f62402257dbed5f21de2cecce47a490.ctex"]
+source_file="res://Images/Pieces/Promoted Silver General.png"
+dest_files=["res://.godot/imported/Promoted Silver General.png-d93343d463810cfbb71c088bd874a959.ctex"]
 
 [params]
 
