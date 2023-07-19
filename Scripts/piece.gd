@@ -25,9 +25,11 @@ enum Player{
 @export var promoted: bool = false
 
 @export var currentPosition: Vector2 = Vector2(1,9)
-var selected: bool = false
+@export var selected: bool = false
 var dragging: bool = false
 var dragging_position: Vector2
+var selectionColor = Color(0,1,0,0.5)
+@onready var rectSize = Vector2(texture.get_width(),texture.get_height())
 
 func _ready():
 	scale *= globalPieceScale
@@ -35,13 +37,21 @@ func _ready():
 	snap_to_grid()
 	if pieceOwner == Player.Gote:
 		rotation_degrees += 180
+	set_process_input(true)
+
+func _input(event):
+	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
+		if get_rect().has_point(to_local(event.position)):
+			selected = !selected
+			queue_redraw()
+
+func _draw():
+	if selected:
+		draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)
 	position = posNotation * boardSprite.scale
-	#print(posNotation)
-	#print(to_global(posNotation))
-	#print("piece position " + str(position))
 
 func set_piece_type():
 	var sprite_texture = null
@@ -66,7 +76,5 @@ func set_piece_type():
 			sprite_texture = null
 	texture = sprite_texture
 
-func _input(_event):
-	pass
 
 

@@ -43,51 +43,12 @@ func draw_grid():
 	draw_circle(Vector2(squareSize*3,squareSize*6),circleRadius, circleColor)
 	draw_circle(Vector2(squareSize*6,squareSize*3),circleRadius, circleColor)
 	draw_circle(Vector2(squareSize*6,squareSize*6),circleRadius, circleColor)
-	
-	#draw_circle(find_square_center(9,2),circleRadius,circleColor)
-	#print(str(find_square_center(9,2))+ " local find square cetner of 9,2")
-	#draw_circle(Vector2(0,0),40,Color.RED)
-	#draw_string(font, find_square_center(0,1),"1",HORIZONTAL_ALIGNMENT_CENTER,10,12,Color.BLACK,TextServer.JUSTIFICATION_NONE,TextServer.DIRECTION_AUTO,TextServer.ORIENTATION_HORIZONTAL)
-	
+
 func _draw():
 	draw_grid()
 
 
 func board_setup():
-#	var piecePositions = {
-#		"Lance1": Vector2(1, 9),
-#		"Knight1": Vector2(2, 9),
-#		"Silver1": Vector2(3, 9),
-#		"Gold1": Vector2(4, 9),
-#		"King": Vector2(5, 9),
-#		"Gold2": Vector2(6, 9),
-#		"Silver2": Vector2(7, 9),
-#		"Knight2": Vector2(8, 9),
-#		"Lance2": Vector2(9, 9),
-#		"Rook1": Vector2(2, 8),
-#		"Bishop1": Vector2(8, 8),
-#		"Pawn1": Vector2(1, 7),
-#		"Pawn2": Vector2(2, 7),
-#		"Pawn3": Vector2(3, 7),
-#		"Pawn4": Vector2(4, 7),
-#		"Pawn5": Vector2(5, 7),
-#		"Pawn6": Vector2(6, 7),
-#		"Pawn7": Vector2(7, 7),
-#		"Pawn8": Vector2(8, 7),
-#		"Pawn9": Vector2(9, 7),
-#		"Rook2": Vector2(2, 1),
-#		"Bishop2": Vector2(8, 1),
-#		"Pawn10": Vector2(1, 3),
-#		"Pawn11": Vector2(2, 3),
-#		"Pawn12": Vector2(3, 3),
-#		"Pawn13": Vector2(4, 3),
-#		"Pawn14": Vector2(5, 3),
-#		"Pawn15": Vector2(6, 3),
-#		"Pawn16": Vector2(7, 3),
-#		"Pawn17": Vector2(8, 3),
-#		"Pawn18": Vector2(9, 3),
-#	}
-#	for piece_name in piecePositions.keys():
 	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
 	create_piece(PieceType.Knight, Player.Sente, Vector2(2,9))
 	create_piece(PieceType.Silver, Player.Sente, Vector2(3,9))
