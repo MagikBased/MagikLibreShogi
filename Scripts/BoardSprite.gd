@@ -21,7 +21,9 @@ var squareSize = (texture.get_width()) / boardSize.x
 var gridColor = Color(0,0,0)
 var circleRadius = squareSize * 0.15
 var circleColor = Color(0,0,0)
-#var font: Font = get_font("font")
+var selectedPiece = null
+
+var playerTurn = Player.Sente
 
 func _ready():
 	board_setup()
@@ -58,8 +60,8 @@ func board_setup():
 	create_piece(PieceType.Silver, Player.Sente, Vector2(7,9))
 	create_piece(PieceType.Knight, Player.Sente, Vector2(8,9))
 	create_piece(PieceType.Lance, Player.Sente, Vector2(9,9))
-	create_piece(PieceType.Bishop, Player.Sente, Vector2(2,8))
-	create_piece(PieceType.Rook, Player.Sente, Vector2(8,8))
+	create_piece(PieceType.Bishop, Player.Sente, Vector2(8,8))
+	create_piece(PieceType.Rook, Player.Sente, Vector2(2,8))
 	create_piece(PieceType.Pawn, Player.Sente, Vector2(1,7))
 	create_piece(PieceType.Pawn, Player.Sente, Vector2(2,7))
 	create_piece(PieceType.Pawn, Player.Sente, Vector2(3,7))

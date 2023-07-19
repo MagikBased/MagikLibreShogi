@@ -40,14 +40,21 @@ func _ready():
 	set_process_input(true)
 
 func _input(event):
-	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT:
 		if get_rect().has_point(to_local(event.position)):
 			selected = !selected
-			queue_redraw()
+			if !selected:
+				boardSprite.selectedPiece = null
+			else:
+				if boardSprite.selectedPiece != null:
+					boardSprite.selectedPiece.selected = false
+				boardSprite.selectedPiece = self
+		queue_redraw()
 
 func _draw():
 	if selected:
 		draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
+		draw_texture(texture,Vector2(-texture.get_width()/2,-texture.get_height()/2),modulate)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)
