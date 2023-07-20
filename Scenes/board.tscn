@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://h1owhnlamhdc"]
 
-[ext_resource type="Texture2D" uid="uid://behsxxjj5yfl0" path="res://images/wood texture.png" id="1_yhy03"]
+[ext_resource type="Texture2D" uid="uid://behsxxjj5yfl0" path="res://Images/wood texture.png" id="1_8k1a7"]
 [ext_resource type="Script" path="res://Scripts/BoardSprite.gd" id="2_0eo4k"]
 
 [node name="Board" type="Node2D"]
@@ -8,6 +8,6 @@
 [node name="BoardSprite" type="Sprite2D" parent="."]
 z_index = -1
 scale = Vector2(0.25, 0.25)
-texture = ExtResource("1_yhy03")
+texture = ExtResource("1_8k1a7")
 centered = false
 script = ExtResource("2_0eo4k")
