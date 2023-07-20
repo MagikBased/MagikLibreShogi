@@ -31,6 +31,8 @@ var dragging_position: Vector2
 var selectionColor = Color(0,1,0,0.5)
 @onready var rectSize = Vector2(texture.get_width(),texture.get_height())
 
+var valid_moves = []
+
 func _ready():
 	scale *= globalPieceScale
 	set_piece_type()
@@ -83,5 +85,16 @@ func set_piece_type():
 			sprite_texture = null
 	texture = sprite_texture
 
+func get_valid_moves(file,rank):
+	var move_direction
+	if pieceOwner == Player.Sente:
+		move_direction = -1
+	else:
+		move_direction = 1
+	
+	if pieceType == PieceType.Pawn:
+		valid_moves.append(Vector2(file + move_direction,rank))
+	is_outside_board(valid_moves)
 
-
+func is_outside_board(moves):
+	pass

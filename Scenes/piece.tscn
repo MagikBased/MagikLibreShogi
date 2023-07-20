@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cttnd1k1swdno"]
 
-[ext_resource type="Texture2D" uid="uid://l3dfard0n1ln" path="res://images/Pieces/Pawn.png" id="1_egvlf"]
+[ext_resource type="Texture2D" uid="uid://l3dfard0n1ln" path="res://Images/Pieces/Pawn.png" id="1_egvlf"]
 [ext_resource type="Script" path="res://Scripts/piece.gd" id="1_erqyp"]
 
 [node name="Piece" type="Sprite2D"]
