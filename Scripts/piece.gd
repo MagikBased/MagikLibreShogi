@@ -46,11 +46,14 @@ func _input(event):
 		if get_rect().has_point(to_local(event.position)):
 			selected = !selected
 			if !selected:
+				valid_moves = []
 				boardSprite.selectedPiece = null
 			else:
 				if boardSprite.selectedPiece != null:
 					boardSprite.selectedPiece.selected = false
+					valid_moves = []
 				boardSprite.selectedPiece = self
+				get_valid_moves(currentPosition)
 		queue_redraw()
 
 func _draw():
@@ -85,16 +88,77 @@ func set_piece_type():
 			sprite_texture = null
 	texture = sprite_texture
 
-func get_valid_moves(file,rank):
+func get_valid_moves(coordinate):
 	var move_direction
+	var possibleMoves = []
 	if pieceOwner == Player.Sente:
 		move_direction = -1
 	else:
 		move_direction = 1
 	
 	if pieceType == PieceType.Pawn:
-		valid_moves.append(Vector2(file + move_direction,rank))
-	is_outside_board(valid_moves)
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
 
-func is_outside_board(moves):
-	pass
+	if pieceType == PieceType.Lance:
+		if check_move_legality(Vector2(coordinate.x,coordinate.y + move_direction)):
+			valid_moves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+
+	if pieceType == PieceType.Knight:
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction * 2))
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction * 2))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
+
+	if pieceType == PieceType.Silver:
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y - move_direction))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y - move_direction))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
+
+	if pieceType == PieceType.Gold:
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
+
+	if pieceType == PieceType.King:
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y - move_direction))
+		possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
+		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y - move_direction))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
+
+
+	print(valid_moves)
+
+func check_move_legality(move):
+	if !is_inside_board(move):
+		return false
+	if is_space_taken(move):
+		return false
+	return true
+
+func is_inside_board(move):
+	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
+		
+func is_space_taken(move):
+	return move in boardSprite.piecesOnBoard
