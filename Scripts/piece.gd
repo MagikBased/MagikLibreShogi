@@ -101,18 +101,14 @@ func get_valid_moves(coordinate):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-
 	if pieceType == PieceType.Lance:
-		if check_move_legality(Vector2(coordinate.x,coordinate.y + move_direction)):
-			valid_moves.append(Vector2(coordinate.x,coordinate.y + move_direction))
-
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
 	if pieceType == PieceType.Knight:
 		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction * 2))
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction * 2))
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-
 	if pieceType == PieceType.Silver:
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -122,7 +118,6 @@ func get_valid_moves(coordinate):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-
 	if pieceType == PieceType.Gold:
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -133,7 +128,16 @@ func get_valid_moves(coordinate):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-
+	if pieceType == PieceType.Bishop:
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction)
+	if pieceType == PieceType.Rook:
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0)
 	if pieceType == PieceType.King:
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -146,9 +150,7 @@ func get_valid_moves(coordinate):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-
-
-	print(valid_moves)
+	print("Valid Moves " + str(valid_moves))
 
 func check_move_legality(move):
 	if !is_inside_board(move):
@@ -162,3 +164,18 @@ func is_inside_board(move):
 		
 func is_space_taken(move):
 	return move in boardSprite.piecesOnBoard
+
+func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file):
+	var target_rank = start_rank + delta_rank
+	var target_file = start_file + delta_file
+	while check_move_legality(Vector2(target_rank,target_file)):
+		valid_move.append(Vector2(target_rank,target_file))
+		target_rank += delta_rank
+		target_file += delta_file
+func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_file):
+	var target_rank = start_rank + delta_rank
+	var target_file = start_file + delta_file
+	while check_move_legality(Vector2(target_rank,target_file)):
+		valid_move.append(Vector2(target_rank,target_file))
+		target_rank += delta_rank
+		target_file += delta_file

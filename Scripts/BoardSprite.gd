@@ -24,6 +24,7 @@ var circleColor = Color(0,0,0)
 var selectedPiece = null
 
 var piecesOnBoard = []
+var pieceData = []
 var playerTurn = Player.Sente
 
 func _ready():
@@ -101,4 +102,5 @@ func create_piece(piece_name,piece_owner,starting_position):
 	piece.pieceOwner = piece_owner
 	piece.currentPosition = starting_position
 	piecesOnBoard.append(starting_position)
+	pieceData.append([piece.pieceType,piece.pieceOwner])
 	get_parent().add_child.call_deferred(piece)
