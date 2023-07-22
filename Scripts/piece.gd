@@ -53,6 +53,7 @@ func _input(event):
 				boardSprite.selectedPiece = null
 			else:
 				if boardSprite.selectedPiece != null:
+					boardSprite.selectedPiece.destroy_all_highlights()
 					boardSprite.selectedPiece.selected = false
 					valid_moves = []
 				boardSprite.selectedPiece = self
@@ -197,12 +198,18 @@ func destroy_all_highlights():
 			child.queue_free()
 
 func move_piece(rank,file):
-	boardSprite.piecesOnBoard.remove_at(boardSprite.piecesOnBoard.find(currentPosition))
+	var indexToRemove = boardSprite.piecesOnBoard.find(currentPosition)
+	boardSprite.piecesOnBoard.remove_at(indexToRemove)
+	boardSprite.pieceData.remove_at(indexToRemove)	
 	if pieceOwner == Player.Sente:
 		boardSprite.sentePiecesOnBoard.remove_at(boardSprite.sentePiecesOnBoard.find(currentPosition))
 	if pieceOwner == Player.Gote:
 		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(currentPosition))
 	currentPosition = Vector2(rank,file)
 	boardSprite.piecesOnBoard.append(currentPosition)
-	print(boardSprite.piecesOnBoard)
+	boardSprite.pieceData.append([pieceType,pieceOwner])
+	if pieceOwner == Player.Sente:
+		boardSprite.sentePiecesOnBoard.append(currentPosition)
+	if pieceOwner == Player.Gote:
+		boardSprite.gentePiecesOnBoard.append(currentPosition)
 	snap_to_grid()
