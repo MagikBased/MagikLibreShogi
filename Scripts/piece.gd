@@ -24,7 +24,7 @@ enum Player{
 @export var pieceOwner = Player.Sente
 @export var promoted: bool = false
 
-@export var currentPosition: Vector2 = Vector2(1,9)
+@export var currentPosition: Vector2
 @export var selected: bool = false
 var dragging: bool = false
 var dragging_position: Vector2
@@ -32,6 +32,8 @@ var selectionColor = Color(0,1,0,0.5)
 @onready var rectSize = Vector2(texture.get_width(),texture.get_height())
 
 var valid_moves = []
+var squareHighlight = load("res://Scenes/square_highlight.tscn")
+
 
 func _ready():
 	scale *= globalPieceScale
@@ -47,6 +49,7 @@ func _input(event):
 			selected = !selected
 			if !selected:
 				valid_moves = []
+				destroy_all_highlights()
 				boardSprite.selectedPiece = null
 			else:
 				if boardSprite.selectedPiece != null:
@@ -54,6 +57,13 @@ func _input(event):
 					valid_moves = []
 				boardSprite.selectedPiece = self
 				get_valid_moves(currentPosition)
+				for move_pos in valid_moves:
+					var highlight = squareHighlight.instantiate()
+					add_child(highlight)
+					highlight.currentPosition = move_pos
+					var deltaPosition = (currentPosition - highlight.currentPosition) * (highlight.texture.get_width())
+					deltaPosition.x *= -1 #this accounts for the sprite origin being on the left side of the board
+					highlight.position -= deltaPosition
 		queue_redraw()
 
 func _draw():
@@ -179,3 +189,20 @@ func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_
 		valid_move.append(Vector2(target_rank,target_file))
 		target_rank += delta_rank
 		target_file += delta_file
+
+
+func destroy_all_highlights():
+	for child in get_children():
+		#if child is square_highlight:
+			child.queue_free()
+
+func move_piece(rank,file):
+	boardSprite.piecesOnBoard.remove_at(boardSprite.piecesOnBoard.find(currentPosition))
+	if pieceOwner == Player.Sente:
+		boardSprite.sentePiecesOnBoard.remove_at(boardSprite.sentePiecesOnBoard.find(currentPosition))
+	if pieceOwner == Player.Gote:
+		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(currentPosition))
+	currentPosition = Vector2(rank,file)
+	boardSprite.piecesOnBoard.append(currentPosition)
+	print(boardSprite.piecesOnBoard)
+	snap_to_grid()
