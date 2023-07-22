@@ -26,7 +26,7 @@ var selectedPiece = null
 var piecesOnBoard = []
 var sentePiecesOnBoard = []
 var gotePiecesOnBoard = []
-var pieceData = []
+var pieceData = [] #[pieceType, pieceOwner, pieceID]
 var playerTurn = Player.Sente
 
 func _ready():
@@ -103,10 +103,10 @@ func create_piece(piece_name,piece_owner,starting_position):
 	piece.pieceType = piece_name
 	piece.pieceOwner = piece_owner
 	piece.currentPosition = starting_position
-	piecesOnBoard.append(starting_position)
-	pieceData.append([piece.pieceType,piece.pieceOwner])
 	if piece.pieceOwner == Player.Sente:
 		sentePiecesOnBoard.append(starting_position)
 	else:
 		gotePiecesOnBoard.append(starting_position)
 	get_parent().add_child.call_deferred(piece)
+	piecesOnBoard.append(starting_position)
+	pieceData.append([piece.pieceType,piece.pieceOwner,piece.get_instance_id()])
