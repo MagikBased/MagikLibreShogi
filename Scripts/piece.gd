@@ -32,7 +32,6 @@ var selectionColor = Color(0,1,0,0.5)
 @onready var rectSize = Vector2(texture.get_width(),texture.get_height())
 
 var valid_moves = []
-var capture_squares = []
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 
 
@@ -202,6 +201,8 @@ func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_
 	var target_file = start_file + delta_file
 	while check_move_legality(Vector2(target_rank,target_file)):
 		valid_move.append(Vector2(target_rank,target_file))
+		if can_capture(Vector2 (target_rank,target_file)):
+			break
 		target_rank += delta_rank
 		target_file += delta_file
 
@@ -212,21 +213,22 @@ func destroy_all_highlights():
 			child.queue_free()
 
 func move_piece(rank,file):
-	if can_capture(Vector2(rank,file)):
+	var destination = Vector2(rank,file)
+	if can_capture(destination):
 		capture_piece(rank,file)
 	var indexToRemove = boardSprite.piecesOnBoard.find(currentPosition)
 	boardSprite.piecesOnBoard.remove_at(indexToRemove) #remove the moving from position from the array
 	boardSprite.pieceData.remove_at(indexToRemove)	#remove the moving from position from the array
 	if pieceOwner == Player.Sente:
 		boardSprite.sentePiecesOnBoard.remove_at(boardSprite.sentePiecesOnBoard.find(currentPosition)) #remove the moving from position from the array
-	if pieceOwner == Player.Gote:
+	elif pieceOwner == Player.Gote:
 		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(currentPosition)) #remove the moving from position from the array
-	currentPosition = Vector2(rank,file)
+	currentPosition = destination
 	boardSprite.piecesOnBoard.append(currentPosition) #adds the moving to position to the array
 	boardSprite.pieceData.append([pieceType,pieceOwner]) # adds the moving to data (piece type and owner) to the array
 	if pieceOwner == Player.Sente:
 		boardSprite.sentePiecesOnBoard.append(currentPosition)  # adds the moving to position into the array
-	if pieceOwner == Player.Gote:
+	elif pieceOwner == Player.Gote:
 		boardSprite.gentePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
 	snap_to_grid()
 
@@ -250,7 +252,13 @@ func capture_piece(rank,file):
 		boardSprite.pieceData.remove_at(indexToRemove)
 		
 		instance_from_id(captured_id).queue_free()
-		
 
 func add_piece_to_hand(piece_data):
 	print(piece_data)
+
+func can_promote():
+	if promoted == true:
+		return false
+	if pieceType == PieceType.Pawn or pieceType == PieceType.Lance or pieceType == PieceType.Knight or pieceType == PieceType.Silver or pieceType == PieceType.Bishop or pieceType == PieceType.Rook:
+		pass
+	return true

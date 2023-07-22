@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://bebnfe6qgiqs6"]
+
+[ext_resource type="Texture2D" uid="uid://dx7o6r4t8pipc" path="res://Images/promotion_window.png" id="1_uoiwc"]
+[ext_resource type="Script" path="res://Scripts/promotion_window.gd" id="2_eayyh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6sxgx"]
+size = Vector2(98, 98.625)
+
+[node name="promotion_window" type="Sprite2D"]
+texture_filter = 1
+texture = ExtResource("1_uoiwc")
+script = ExtResource("2_eayyh")
+
+[node name="Area2D_promote" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D_promote"]
+position = Vector2(0, -50.3125)
+shape = SubResource("RectangleShape2D_6sxgx")
+
+[node name="Area2D_stay" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D_stay"]
+position = Vector2(0, 49.375)
+shape = SubResource("RectangleShape2D_6sxgx")
