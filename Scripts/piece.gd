@@ -33,6 +33,7 @@ var selectionColor = Color(0,1,0,0.5)
 
 var valid_moves = []
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
+var promotionWindow = load("res://Scenes/promotion_window.tscn")
 
 
 func _ready():
@@ -62,6 +63,7 @@ func _input(event):
 					var highlight = squareHighlight.instantiate()
 					add_child(highlight)
 					highlight.currentPosition = move_pos
+					print(highlight.currentPosition)
 					var deltaPosition = (currentPosition - highlight.currentPosition) * (highlight.texture.get_width())
 					deltaPosition.x *= -1 #this accounts for the sprite origin being on the left side of the board
 					highlight.position -= deltaPosition
@@ -70,7 +72,7 @@ func _input(event):
 func _draw():
 	if selected:
 		draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
-		draw_texture(texture,Vector2(-texture.get_width()/2,-texture.get_height()/2),modulate)
+		draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)
@@ -82,19 +84,37 @@ func set_piece_type():
 		PieceType.King:
 			sprite_texture = load("res://Images/Pieces/King.png")
 		PieceType.Pawn:
-			sprite_texture = load("res://Images/Pieces/Pawn.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Pawn.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Pawn.png")
 		PieceType.Lance:
-			sprite_texture = load("res://Images/Pieces/Lance.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Lance.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Lance.png")
 		PieceType.Knight:
-			sprite_texture = load("res://Images/Pieces/Knight.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Knight.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Knight.png")
 		PieceType.Silver:
-			sprite_texture = load("res://Images/Pieces/Silver General.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Silver General.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Silver General.png")
 		PieceType.Gold:
 			sprite_texture = load("res://Images/Pieces/Gold General.png")
 		PieceType.Bishop:
-			sprite_texture = load("res://Images/Pieces/Bishop.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Bishop.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Bishop.png")
 		PieceType.Rook:
-			sprite_texture = load("res://Images/Pieces/Rook.png")
+			if promoted == false:
+				sprite_texture = load("res://Images/Pieces/Rook.png")
+			elif promoted == true:
+				sprite_texture = load("res://Images/Pieces/Promoted Rook.png")
 		_:
 			sprite_texture = null
 	texture = sprite_texture
@@ -109,14 +129,39 @@ func get_valid_moves(coordinate):
 	
 	if pieceType == PieceType.Pawn:
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+		if promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))			
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
 	if pieceType == PieceType.Lance:
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+		if !promoted:
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+		elif promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
+		for moves in possibleMoves:
+			if check_move_legality(moves):
+				valid_moves.append(moves)
 	if pieceType == PieceType.Knight:
-		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction * 2))
-		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction * 2))
+		if !promoted:
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction * 2))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction * 2))
+		elif promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
@@ -124,8 +169,13 @@ func get_valid_moves(coordinate):
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
-		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y - move_direction))
-		possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y - move_direction))
+		if !promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y - move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y - move_direction))
+		elif promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
@@ -144,11 +194,27 @@ func get_valid_moves(coordinate):
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction)
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction)
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction)
+		if promoted:
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
+			possibleMoves.append(Vector2(coordinate.x,coordinate.y - move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y))
+			for moves in possibleMoves:
+				if check_move_legality(moves):
+					valid_moves.append(moves)
 	if pieceType == PieceType.Rook:
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction)
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0)
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
 		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0)
+		if promoted:
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
+			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y - move_direction))
+			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y - move_direction))
+			for moves in possibleMoves:
+				if check_move_legality(moves):
+					valid_moves.append(moves)
 	if pieceType == PieceType.King:
 		possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 		possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -209,13 +275,13 @@ func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_
 
 func destroy_all_highlights():
 	for child in get_children():
-		#if child is square_highlight:
+		if child.is_in_group("highlights"):
 			child.queue_free()
 
-func move_piece(rank,file):
-	var destination = Vector2(rank,file)
+func move_piece(file,rank):
+	var destination = Vector2(file,rank)
 	if can_capture(destination):
-		capture_piece(rank,file)
+		capture_piece(file,rank)
 	var indexToRemove = boardSprite.piecesOnBoard.find(currentPosition)
 	boardSprite.piecesOnBoard.remove_at(indexToRemove) #remove the moving from position from the array
 	boardSprite.pieceData.remove_at(indexToRemove)	#remove the moving from position from the array
@@ -229,25 +295,46 @@ func move_piece(rank,file):
 	if pieceOwner == Player.Sente:
 		boardSprite.sentePiecesOnBoard.append(currentPosition)  # adds the moving to position into the array
 	elif pieceOwner == Player.Gote:
-		boardSprite.gentePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
+		boardSprite.gotePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
 	snap_to_grid()
+	if can_promote(rank):
+		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 1) or (pieceType == PieceType.Knight and rank <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 9) or (pieceType == PieceType.Knight and rank >= 8))):
+			print(rank)
+			promoted = true
+			set_piece_type()
+		else:
+			var promotionPrompt = promotionWindow.instantiate()
+			add_child(promotionPrompt)
+			if pieceOwner == Player.Sente:
+				promotionPrompt.position.y += rectSize.y / 2
+	if boardSprite.selectedPiece != null:
+		boardSprite.selectedPiece = null
+		destroy_all_highlights()
+		selected = false
+		valid_moves = []
+	if pieceOwner == Player.Sente:
+		boardSprite.playerTurn = Player.Gote
+		queue_redraw()
+	elif pieceOwner == Player.Gote:
+		boardSprite.playerTurn = Player.Sente
+		queue_redraw()
 
-func capture_piece(rank,file):
-	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(rank,file))
+func capture_piece(file,rank):
+	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
 	var captured_id
 	if pieceOwner == Player.Sente:
-		add_piece_to_hand((boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(rank,file))]))
-		captured_id = (boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(rank,file))])[2]
-		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(Vector2(rank,file)))
+		add_piece_to_hand((boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(file,rank))]))
+		captured_id = (boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(file,rank))])[2]
+		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(Vector2(file,rank)))
 		boardSprite.piecesOnBoard.remove_at(indexToRemove)
 		boardSprite.pieceData.remove_at(indexToRemove)
 		
 		instance_from_id(captured_id).queue_free()
 		
 	if pieceOwner == Player.Gote:
-		add_piece_to_hand((boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(rank,file))]))
-		captured_id = (boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(rank,file))])[2]
-		boardSprite.sentePiecesOnBoard.remove_at(boardSprite.sentePiecesOnBoard.find(Vector2(rank,file)))
+		add_piece_to_hand((boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(file,rank))]))
+		captured_id = (boardSprite.pieceData[boardSprite.piecesOnBoard.find(Vector2(file,rank))])[2]
+		boardSprite.sentePiecesOnBoard.remove_at(boardSprite.sentePiecesOnBoard.find(Vector2(file,rank)))
 		boardSprite.piecesOnBoard.remove_at(indexToRemove)
 		boardSprite.pieceData.remove_at(indexToRemove)
 		
@@ -256,9 +343,12 @@ func capture_piece(rank,file):
 func add_piece_to_hand(piece_data):
 	print(piece_data)
 
-func can_promote():
+func can_promote(rank):
 	if promoted == true:
 		return false
 	if pieceType == PieceType.Pawn or pieceType == PieceType.Lance or pieceType == PieceType.Knight or pieceType == PieceType.Silver or pieceType == PieceType.Bishop or pieceType == PieceType.Rook:
-		pass
-	return true
+		if pieceOwner == Player.Sente and rank <= 3:
+			return true
+		elif pieceOwner == Player.Gote and rank >= 7:
+			return true
+	return false
