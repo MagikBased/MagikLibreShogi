@@ -63,9 +63,11 @@ func _input(event):
 					var highlight = squareHighlight.instantiate()
 					add_child(highlight)
 					highlight.currentPosition = move_pos
-					print(highlight.currentPosition)
 					var deltaPosition = (currentPosition - highlight.currentPosition) * (highlight.texture.get_width())
-					deltaPosition.x *= -1 #this accounts for the sprite origin being on the left side of the board
+					if pieceOwner == Player.Sente:
+						deltaPosition.x *= -1 #this accounts for the sprite origin being on the left side of the board
+					elif pieceOwner == Player.Gote:
+						deltaPosition.y *= -1
 					highlight.position -= deltaPosition
 		queue_redraw()
 
@@ -291,7 +293,7 @@ func move_piece(file,rank):
 		boardSprite.gotePiecesOnBoard.remove_at(boardSprite.gotePiecesOnBoard.find(currentPosition)) #remove the moving from position from the array
 	currentPosition = destination
 	boardSprite.piecesOnBoard.append(currentPosition) #adds the moving to position to the array
-	boardSprite.pieceData.append([pieceType,pieceOwner]) # adds the moving to data (piece type and owner) to the array
+	boardSprite.pieceData.append([pieceType, pieceOwner, get_instance_id()]) # adds the moving to data (piece type and owner) to the array
 	if pieceOwner == Player.Sente:
 		boardSprite.sentePiecesOnBoard.append(currentPosition)  # adds the moving to position into the array
 	elif pieceOwner == Player.Gote:
@@ -299,14 +301,12 @@ func move_piece(file,rank):
 	snap_to_grid()
 	if can_promote(rank):
 		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 1) or (pieceType == PieceType.Knight and rank <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 9) or (pieceType == PieceType.Knight and rank >= 8))):
-			print(rank)
 			promoted = true
 			set_piece_type()
 		else:
 			var promotionPrompt = promotionWindow.instantiate()
 			add_child(promotionPrompt)
-			if pieceOwner == Player.Sente:
-				promotionPrompt.position.y += rectSize.y / 2
+			promotionPrompt.position.y += rectSize.y / 2
 	if boardSprite.selectedPiece != null:
 		boardSprite.selectedPiece = null
 		destroy_all_highlights()
@@ -339,9 +339,10 @@ func capture_piece(file,rank):
 		boardSprite.pieceData.remove_at(indexToRemove)
 		
 		instance_from_id(captured_id).queue_free()
+	print("PieceData: " + str(boardSprite.pieceData))
 
 func add_piece_to_hand(piece_data):
-	print(piece_data)
+	pass
 
 func can_promote(rank):
 	if promoted == true:

@@ -31,6 +31,7 @@ var playerTurn = Player.Sente
 
 func _ready():
 	board_setup()
+	print("PieceData: " + str(pieceData))
 
 func find_square_center(file: int,rank: int) -> Vector2:
 	var centerX = (10 - file) * squareSize - squareSize / 2
@@ -109,4 +110,4 @@ func create_piece(piece_name,piece_owner,starting_position):
 		gotePiecesOnBoard.append(starting_position)
 	get_parent().add_child.call_deferred(piece)
 	piecesOnBoard.append(starting_position)
-	pieceData.append([piece.pieceType,piece.pieceOwner,piece.get_instance_id()])
+	pieceData.append([piece.pieceType, piece.pieceOwner, piece.get_instance_id()])
