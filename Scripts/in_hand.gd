@@ -17,6 +17,15 @@ enum PieceType{
 }
 
 var handOwner = Player.Sente
+var piecesInHand = [0,0,0,0,0,0,0] #P,L,N,S,G,B,R
+
+@onready var inHandPawn = inHandPiece.instantiate()
+@onready var inHandLance = inHandPiece.instantiate()
+@onready var inHandKnight = inHandPiece.instantiate()
+@onready var inHandSilver = inHandPiece.instantiate()
+@onready var inHandGold = inHandPiece.instantiate()
+@onready var inHandBishop = inHandPiece.instantiate()
+@onready var inHandRook = inHandPiece.instantiate()
 
 @onready var board = get_parent()
 @onready var boardSprite = board.get_node("BoardSprite")
@@ -30,13 +39,6 @@ var inHandPiece = load("res://Scenes/in_hand_piece.tscn")
 
 func _ready():
 	if handOwner == Player.Sente:
-		var inHandPawn = inHandPiece.instantiate()
-		var inHandLance = inHandPiece.instantiate()
-		var inHandKnight = inHandPiece.instantiate()
-		var inHandSilver = inHandPiece.instantiate()
-		var inHandGold = inHandPiece.instantiate()
-		var inHandBishop = inHandPiece.instantiate()
-		var inHandRook = inHandPiece.instantiate()
 		add_child.call_deferred(inHandPawn)
 		add_child.call_deferred(inHandLance)
 		add_child.call_deferred(inHandKnight)
@@ -59,13 +61,6 @@ func _ready():
 		inHandRook.position = Vector2(xMargin + rectWidth / 2, rectWidth * 1 - rectWidth / 2)
 		inHandRook.pieceType = PieceType.Rook
 	if handOwner == Player.Gote:
-		var inHandPawn = inHandPiece.instantiate()
-		var inHandLance = inHandPiece.instantiate()
-		var inHandKnight = inHandPiece.instantiate()
-		var inHandSilver = inHandPiece.instantiate()
-		var inHandGold = inHandPiece.instantiate()
-		var inHandBishop = inHandPiece.instantiate()
-		var inHandRook = inHandPiece.instantiate()
 		add_child.call_deferred(inHandPawn)
 		add_child.call_deferred(inHandLance)
 		add_child.call_deferred(inHandKnight)
@@ -94,6 +89,9 @@ func _ready():
 		inHandRook.position = Vector2(-xMargin - rectWidth / 2, rectWidth * 7 - rectWidth / 2)
 		inHandRook.pieceType = PieceType.Rook
 		inHandRook.pieceOwner = Player.Gote
+		
+	await(get_tree().create_timer(0).timeout)
+	#update_in_hand()
 
 func _draw():
 	if handOwner == Player.Sente:
@@ -104,3 +102,28 @@ func _draw():
 		draw_rect(Rect2(-xMargin, 0,-rectWidth,rectHeight),boardSprite.gridColor,false,boardSprite.lineSize)
 		for i in 7:
 			draw_line(Vector2(-xMargin,i * boardSprite.texture.get_height() * boardSprite.scale.x / 7), Vector2(-rectWidth - xMargin,i * boardSprite.texture.get_height() * boardSprite.scale.x / 7),boardSprite.gridColor,boardSprite.lineSize)
+
+func update_in_hand(piece, amount):
+	if piece == PieceType.Pawn:
+		inHandPawn.pieceCount += amount
+		inHandPawn.update_pieces()
+	if piece == PieceType.Lance:
+		inHandLance.pieceCount += amount
+		inHandLance.update_pieces()
+	if piece == PieceType.Knight:
+		inHandKnight.pieceCount += amount
+		inHandKnight.update_pieces()
+	if piece == PieceType.Silver:
+		inHandSilver.pieceCount += amount
+		inHandSilver.update_pieces()
+	if piece == PieceType.Gold:
+		inHandGold.pieceCount += amount
+		inHandGold.update_pieces()
+	if piece == PieceType.Bishop:
+		inHandBishop.pieceCount += amount
+		inHandBishop.update_pieces()
+	if piece == PieceType.Rook:
+		inHandRook.pieceCount += amount
+		inHandRook.update_pieces()
+	
+

@@ -18,6 +18,7 @@ enum Player{
 
 var pieceType: PieceType = PieceType.Pawn
 var pieceOwner = Player.Sente
+var pieceCount = 0
 @onready var spriteNode = $Sprite2D
 
 @onready var board = get_parent().get_parent()
@@ -34,6 +35,7 @@ var squareHighlight = load("res://Scenes/square_highlight.tscn")
 
 func _ready():
 	scale *= globalPieceScale
+	#spriteNode.modulate = Color(1,1,1,0.5)
 	var sprite_texture = null
 	match pieceType:
 		PieceType.Pawn:
@@ -56,10 +58,12 @@ func _ready():
 	if pieceOwner == Player.Gote:
 		rotation_degrees += 180
 	set_process_input(true)
+	#await(get_tree().create_timer(0).timeout)
+	update_pieces()
 	
 
 func _input(event):
-	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn and pieceCount > 0) and event.button_index == MOUSE_BUTTON_LEFT:
 		if spriteNode.get_rect().has_point(to_local(event.position)):
 			selected = !selected
 			if !selected:
@@ -151,8 +155,17 @@ func drop_piece(file,rank):
 	boardSprite.create_piece(pieceType, pieceOwner, Vector2(file,rank))
 	destroy_all_highlights()
 	if pieceOwner == Player.Sente:
+		boardSprite.inHandSente.update_in_hand(pieceType,-1)
 		boardSprite.playerTurn = Player.Gote
 		queue_redraw()
 	elif pieceOwner == Player.Gote:
+		boardSprite.inHandGote.update_in_hand(pieceType,-1)
 		boardSprite.playerTurn = Player.Sente
 		queue_redraw()
+
+func update_pieces():
+	if pieceCount > 0:
+		spriteNode.modulate = Color(1,1,1,1)
+	elif pieceCount == 0:
+		spriteNode.modulate = Color(1,1,1,0.5)
+		

@@ -341,7 +341,37 @@ func capture_piece(file,rank):
 		instance_from_id(captured_id).queue_free()
 
 func add_piece_to_hand(piece_data):
-	pass
+	if pieceOwner == Player.Sente: #check for piece owner
+		if piece_data[0] == PieceType.Pawn:
+			boardSprite.inHandSente.update_in_hand(PieceType.Pawn,1)
+		if piece_data[0] == PieceType.Lance:
+			boardSprite.inHandSente.update_in_hand(PieceType.Lance,1)
+		if piece_data[0] == PieceType.Knight:
+			boardSprite.inHandSente.update_in_hand(PieceType.Knight,1)
+		if piece_data[0] == PieceType.Silver:
+			boardSprite.inHandSente.update_in_hand(PieceType.Silver,1)
+		if piece_data[0] == PieceType.Gold:
+			boardSprite.inHandSente.update_in_hand(PieceType.Gold,1)
+		if piece_data[0] == PieceType.Bishop:
+			boardSprite.inHandSente.update_in_hand(PieceType.Bishop,1)
+		if piece_data[0] == PieceType.Rook:
+			boardSprite.inHandSente.update_in_hand(PieceType.Rook,1)
+	if pieceOwner == Player.Gote:
+		if piece_data[0] == PieceType.Pawn:
+			boardSprite.inHandGote.update_in_hand(PieceType.Pawn,1)
+		if piece_data[0] == PieceType.Lance:
+			boardSprite.inHandGote.update_in_hand(PieceType.Lance,1)
+		if piece_data[0] == PieceType.Knight:
+			boardSprite.inHandGote.update_in_hand(PieceType.Knight,1)
+		if piece_data[0] == PieceType.Silver:
+			boardSprite.inHandGote.update_in_hand(PieceType.Silver,1)
+		if piece_data[0] == PieceType.Gold:
+			boardSprite.inHandGote.update_in_hand(PieceType.Gold,1)
+		if piece_data[0] == PieceType.Bishop:
+			boardSprite.inHandGote.update_in_hand(PieceType.Bishop,1)
+		if piece_data[0] == PieceType.Rook:
+			boardSprite.inHandGote.update_in_hand(PieceType.Rook,1)
+
 
 func can_promote(rank):
 	if promoted == true:
