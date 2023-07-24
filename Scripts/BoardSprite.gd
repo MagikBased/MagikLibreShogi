@@ -27,7 +27,8 @@ var piecesOnBoard = []
 var sentePiecesOnBoard = []
 var gotePiecesOnBoard = []
 var pieceData = [] #[pieceType, pieceOwner, pieceID]
-@export var allMoves = []
+var allMoves = []
+var allMovesAfterCapture = []
 var senteInCheck = false
 var goteInCheck = false
 var playerTurn = Player.Sente
@@ -39,6 +40,8 @@ var inHandGote = inHand.instantiate()
 func _ready():
 	board_setup()
 	#print(pieceData)
+	await(get_tree().create_timer(1).timeout)
+	get_all_moves_after_capture(Player.Sente, Vector2(5,3))
 	#await(get_tree().create_timer(1).timeout)
 	#get_all_moves_for_player(Player.Sente)
 	
@@ -151,6 +154,29 @@ func get_all_moves_for_player(player):
 						if !(i in allMoves):
 							allMoves.append(i)
 	#print("all moves in get all moves "+str(allMoves))
+
+func get_all_moves_after_capture(player, capturePos):
+	allMovesAfterCapture = []
+	var gamePieces = []
+	var capturePieceIndex
+	capturePieceIndex = piecesOnBoard.find(capturePos)
+	for piece in pieceData:
+		if player == Player.Sente:
+			if piece[1] == Player.Sente:
+				gamePieces.append(piece)
+				for j in gamePieces:
+					instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition)
+					for i in instance_from_id(j[2]).valid_moves:
+						if !(i in allMoves):
+							allMoves.append(i)
+		elif player == Player.Gote:
+			if piece[1] == Player.Gote:
+				gamePieces.append(piece)
+				for k in gamePieces:
+					instance_from_id(k[2]).get_valid_moves(instance_from_id(k[2]).currentPosition)
+					for i in instance_from_id(k[2]).valid_moves:
+						if !(i in allMoves):
+							allMoves.append(i)
 	
 
 func find_king(player):
@@ -170,8 +196,8 @@ func is_in_check(player):
 	if player == Player.Sente:
 		get_all_moves_for_player(Player.Gote)
 		kingPosition = find_king(Player.Sente)
-		print("Sente kingPos " + str(kingPosition))
-		print("all moves in is in check "+str(allMoves))
+		#print("Sente kingPos " + str(kingPosition))
+		#print("all moves in is in check "+str(allMoves))
 		if kingPosition[0] in allMoves:
 			senteInCheck = true
 		else:
@@ -180,10 +206,11 @@ func is_in_check(player):
 	if player == Player.Gote:
 		get_all_moves_for_player(Player.Sente)
 		kingPosition = find_king(Player.Gote)
-		print("Gote kingPos " + str(kingPosition))
-		print("all moves in is in check "+str(allMoves))
+		#print("Gote kingPos " + str(kingPosition))
+		#print("all moves in is in check "+str(allMoves))
 		if kingPosition[0] in allMoves:
 			goteInCheck = true
 		else:
 			goteInCheck = false
-			
+
+

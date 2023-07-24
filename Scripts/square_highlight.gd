@@ -14,4 +14,3 @@ func _input(event):
 			get_parent().move_piece(currentPosition.x,currentPosition.y)
 		if get_parent().has_method("drop_piece"):
 			get_parent().drop_piece(currentPosition.x,currentPosition.y)
-
