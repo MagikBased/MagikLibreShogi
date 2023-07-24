@@ -29,9 +29,14 @@ var gotePiecesOnBoard = []
 var pieceData = [] #[pieceType, pieceOwner, pieceID]
 var playerTurn = Player.Sente
 
+var inHand = load("res://Scenes/in_hand.tscn")
+var inHandSente = inHand.instantiate()
+var inHandGote = inHand.instantiate()
+
 func _ready():
 	board_setup()
-	print("PieceData: " + str(pieceData))
+	#print(pieceData)
+	
 
 func find_square_center(file: int,rank: int) -> Vector2:
 	var centerX = (10 - file) * squareSize - squareSize / 2
@@ -53,7 +58,6 @@ func draw_grid():
 
 func _draw():
 	draw_grid()
-
 
 func board_setup():
 	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
@@ -97,6 +101,12 @@ func board_setup():
 	create_piece(PieceType.Pawn, Player.Gote, Vector2(7,3))
 	create_piece(PieceType.Pawn, Player.Gote, Vector2(8,3))
 	create_piece(PieceType.Pawn, Player.Gote, Vector2(9,3))
+	
+	get_parent().add_child.call_deferred(inHandSente)
+	inHandSente.position = Vector2(texture.get_width() * scale.x,0)
+	get_parent().add_child.call_deferred(inHandGote)
+	inHandGote.position = Vector2(0,0)
+	inHandGote.handOwner = Player.Gote
 
 func create_piece(piece_name,piece_owner,starting_position):
 	var piece_scene = load("res://Scenes/piece.tscn")

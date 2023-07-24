@@ -339,7 +339,6 @@ func capture_piece(file,rank):
 		boardSprite.pieceData.remove_at(indexToRemove)
 		
 		instance_from_id(captured_id).queue_free()
-	print("PieceData: " + str(boardSprite.pieceData))
 
 func add_piece_to_hand(piece_data):
 	pass

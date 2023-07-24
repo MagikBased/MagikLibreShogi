@@ -1,45 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://c01veoeu33vjj"]
+[gd_scene load_steps=2 format=3 uid="uid://c01veoeu33vjj"]
 
 [ext_resource type="Script" path="res://Scripts/in_hand.gd" id="1_pwnco"]
-[ext_resource type="Texture2D" uid="uid://l3dfard0n1ln" path="res://Images/Pieces/Pawn.png" id="2_mdcaa"]
-[ext_resource type="Texture2D" uid="uid://cb6jqtwxy187h" path="res://Images/Pieces/Lance.png" id="3_51g3x"]
-[ext_resource type="Texture2D" uid="uid://6am0wnno1vxx" path="res://Images/Pieces/Knight.png" id="4_1ger7"]
-[ext_resource type="Texture2D" uid="uid://bpn72r1hnvrml" path="res://Images/Pieces/Silver General.png" id="5_yc3ux"]
-[ext_resource type="Texture2D" uid="uid://7m81yrub0rpe" path="res://Images/Pieces/Gold General.png" id="6_11xrd"]
-[ext_resource type="Texture2D" uid="uid://cqbpsllkv7mrp" path="res://Images/Pieces/Bishop.png" id="7_e6ehv"]
-[ext_resource type="Texture2D" uid="uid://di3ad6pbwbq77" path="res://Images/Pieces/Rook.png" id="8_1x3jh"]
 
 [node name="InHand" type="Node2D"]
 script = ExtResource("1_pwnco")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
-alignment = 1
-
-[node name="Pawn" type="Sprite2D" parent="VBoxContainer"]
-texture = ExtResource("2_mdcaa")
-
-[node name="Lance" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -90)
-texture = ExtResource("3_51g3x")
-
-[node name="Knight" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -180)
-texture = ExtResource("4_1ger7")
-
-[node name="Silver" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -270)
-texture = ExtResource("5_yc3ux")
-
-[node name="Gold" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -360)
-texture = ExtResource("6_11xrd")
-
-[node name="Bishop" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -450)
-texture = ExtResource("7_e6ehv")
-
-[node name="Rook" type="Sprite2D" parent="VBoxContainer"]
-position = Vector2(0, -540)
-texture = ExtResource("8_1x3jh")
