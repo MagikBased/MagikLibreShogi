@@ -318,6 +318,8 @@ func move_piece(file,rank):
 	elif pieceOwner == Player.Gote:
 		boardSprite.playerTurn = Player.Sente
 		queue_redraw()
+	boardSprite.is_in_check(Player.Sente)
+	boardSprite.is_in_check(Player.Gote)
 
 func capture_piece(file,rank):
 	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
@@ -371,7 +373,6 @@ func add_piece_to_hand(piece_data):
 			boardSprite.inHandGote.update_in_hand(PieceType.Bishop,1)
 		if piece_data[0] == PieceType.Rook:
 			boardSprite.inHandGote.update_in_hand(PieceType.Rook,1)
-
 
 func can_promote(rank):
 	if promoted == true:

@@ -27,6 +27,9 @@ var piecesOnBoard = []
 var sentePiecesOnBoard = []
 var gotePiecesOnBoard = []
 var pieceData = [] #[pieceType, pieceOwner, pieceID]
+@export var allMoves = []
+var senteInCheck = false
+var goteInCheck = false
 var playerTurn = Player.Sente
 
 var inHand = load("res://Scenes/in_hand.tscn")
@@ -36,6 +39,8 @@ var inHandGote = inHand.instantiate()
 func _ready():
 	board_setup()
 	#print(pieceData)
+	#await(get_tree().create_timer(1).timeout)
+	#get_all_moves_for_player(Player.Sente)
 	
 
 func find_square_center(file: int,rank: int) -> Vector2:
@@ -102,6 +107,8 @@ func board_setup():
 	create_piece(PieceType.Pawn, Player.Gote, Vector2(8,3))
 	create_piece(PieceType.Pawn, Player.Gote, Vector2(9,3))
 	
+	#create_piece(PieceType.Rook, Player.Gote, Vector2(5,8))
+	
 	get_parent().add_child.call_deferred(inHandSente)
 	inHandSente.position = Vector2(texture.get_width() * scale.x,0)
 	get_parent().add_child.call_deferred(inHandGote)
@@ -121,3 +128,62 @@ func create_piece(piece_name,piece_owner,starting_position):
 	get_parent().add_child.call_deferred(piece)
 	piecesOnBoard.append(starting_position)
 	pieceData.append([piece.pieceType, piece.pieceOwner, piece.get_instance_id()])
+
+func get_all_moves_for_player(player):
+	allMoves = []
+	var gamePieces = []
+	for piece in pieceData:
+		if player == Player.Sente:
+			if piece[1] == Player.Sente:
+				gamePieces.append(piece)
+				for j in gamePieces:
+					instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition)
+					for i in instance_from_id(j[2]).valid_moves:
+						if !(i in allMoves):
+							allMoves.append(i)
+
+		elif player == Player.Gote:
+			if piece[1] == Player.Gote:
+				gamePieces.append(piece)
+				for k in gamePieces:
+					instance_from_id(k[2]).get_valid_moves(instance_from_id(k[2]).currentPosition)
+					for i in instance_from_id(k[2]).valid_moves:
+						if !(i in allMoves):
+							allMoves.append(i)
+	#print("all moves in get all moves "+str(allMoves))
+	
+
+func find_king(player):
+	var kingPos = []
+	var kingIndex
+	for piece in pieceData:
+		if player == Player.Sente and piece[1] == Player.Sente and piece[0] == PieceType.King:
+			kingIndex = piece[2]
+			kingPos.append(instance_from_id(kingIndex).currentPosition)
+		if player == Player.Gote and piece[1] == Player.Gote and piece[0] == PieceType.King:
+			kingIndex = piece[2]
+			kingPos.append(instance_from_id(kingIndex).currentPosition)
+	return kingPos
+
+func is_in_check(player):
+	var kingPosition = []
+	if player == Player.Sente:
+		get_all_moves_for_player(Player.Gote)
+		kingPosition = find_king(Player.Sente)
+		print("Sente kingPos " + str(kingPosition))
+		print("all moves in is in check "+str(allMoves))
+		if kingPosition[0] in allMoves:
+			senteInCheck = true
+		else:
+			senteInCheck = false
+	
+	if player == Player.Gote:
+		get_all_moves_for_player(Player.Sente)
+		kingPosition = find_king(Player.Gote)
+		print("Gote kingPos " + str(kingPosition))
+		print("all moves in is in check "+str(allMoves))
+		if kingPosition[0] in allMoves:
+			goteInCheck = true
+		else:
+			goteInCheck = false
+			
