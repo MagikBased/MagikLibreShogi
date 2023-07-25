@@ -124,6 +124,7 @@ func set_piece_type():
 func get_valid_moves(coordinate):
 	var move_direction
 	var possibleMoves = []
+	valid_moves = []
 	if pieceOwner == Player.Sente:
 		move_direction = -1
 	else:
