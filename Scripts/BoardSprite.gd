@@ -37,14 +37,18 @@ var inHand = load("res://Scenes/in_hand.tscn")
 var inHandSente = inHand.instantiate()
 var inHandGote = inHand.instantiate()
 
+var sfenManagerScript = load("res://Scenes/sfen_notation_manager.tscn")
+
+
 func _ready():
 	board_setup()
 	#print(pieceData)
-	await(get_tree().create_timer(1).timeout)
-	get_all_moves_after_capture(Player.Sente, Vector2(5,3))
 	#await(get_tree().create_timer(1).timeout)
-	#get_all_moves_for_player(Player.Sente)
-	
+	#get_all_moves_after_capture(Player.Sente, Vector2(5,3))
+	await(get_tree().create_timer(1).timeout)
+	get_all_moves_for_player(Player.Sente)
+	#print(pieceData)
+	#print(piecesOnBoard)
 
 func find_square_center(file: int,rank: int) -> Vector2:
 	var centerX = (10 - file) * squareSize - squareSize / 2
@@ -117,6 +121,9 @@ func board_setup():
 	get_parent().add_child.call_deferred(inHandGote)
 	inHandGote.position = Vector2(0,0)
 	inHandGote.handOwner = Player.Gote
+	
+	var sfen_manager = sfenManagerScript.instantiate()
+	add_child(sfen_manager)
 
 func create_piece(piece_name,piece_owner,starting_position):
 	var piece_scene = load("res://Scenes/piece.tscn")
@@ -196,12 +203,13 @@ func is_in_check(player):
 	if player == Player.Sente:
 		get_all_moves_for_player(Player.Gote)
 		kingPosition = find_king(Player.Sente)
-		#print("Sente kingPos " + str(kingPosition))
-		#print("all moves in is in check "+str(allMoves))
+		print("Sente kingPos " + str(kingPosition))
+		print("all moves in is in check "+str(allMoves))
 		if kingPosition[0] in allMoves:
 			senteInCheck = true
 		else:
 			senteInCheck = false
+		print("Is in check? " + str(senteInCheck))
 	
 	if player == Player.Gote:
 		get_all_moves_for_player(Player.Sente)
@@ -212,5 +220,3 @@ func is_in_check(player):
 			goteInCheck = true
 		else:
 			goteInCheck = false
-
-
