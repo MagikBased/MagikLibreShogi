@@ -22,6 +22,7 @@ var gridColor = Color(0,0,0)
 var circleRadius = squareSize * 0.15
 var circleColor = Color(0,0,0)
 var selectedPiece = null
+var xMargin = 25
 
 var piecesOnBoard = []
 var sentePiecesOnBoard = []
@@ -32,6 +33,7 @@ var allMovesAfterCapture = []
 var senteInCheck = false
 var goteInCheck = false
 var playerTurn = Player.Sente
+var turnCount = 1
 
 var inHand = load("res://Scenes/in_hand.tscn")
 var inHandSente = inHand.instantiate()
@@ -124,6 +126,8 @@ func board_setup():
 	
 	var sfen_manager = sfenManagerScript.instantiate()
 	add_child(sfen_manager)
+	sfen_manager.scale *= 4
+	sfen_manager.position = Vector2 (texture.get_width() + (xMargin * 6 * sfen_manager.scale.x),0)
 
 func create_piece(piece_name,piece_owner,starting_position):
 	var piece_scene = load("res://Scenes/piece.tscn")
