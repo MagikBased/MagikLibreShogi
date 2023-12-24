@@ -125,5 +125,20 @@ func update_in_hand(piece, amount):
 	if piece == PieceType.Rook:
 		inHandRook.pieceCount += amount
 		inHandRook.update_pieces()
+	if piece == -1:
+		inHandPawn.pieceCount = amount
+		inHandPawn.update_pieces()
+		inHandLance.pieceCount = amount
+		inHandLance.update_pieces()
+		inHandKnight.pieceCount = amount
+		inHandKnight.update_pieces()
+		inHandSilver.pieceCount = amount
+		inHandSilver.update_pieces()
+		inHandGold.pieceCount = amount
+		inHandGold.update_pieces()
+		inHandBishop.pieceCount = amount
+		inHandBishop.update_pieces()
+		inHandRook.pieceCount = amount
+		inHandRook.update_pieces()
 	
 

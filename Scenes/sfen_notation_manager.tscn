@@ -10,16 +10,17 @@ offset_right = 8.0
 offset_bottom = 8.0
 text = "Get SFEN"
 
+[node name="Button_set_sfen" type="Button" parent="."]
+offset_left = 110.0
+offset_right = 257.0
+offset_bottom = 31.0
+text = "Set Board to SFEN"
+
 [node name="LineEdit_sfen" type="TextEdit" parent="."]
 offset_top = 39.0
 offset_right = 256.0
 offset_bottom = 135.0
 wrap_mode = 1
 
-[node name="Button" type="Button" parent="."]
-offset_left = 110.0
-offset_right = 257.0
-offset_bottom = 31.0
-text = "Set Board to SFEN"
-
-[connection signal="pressed" from="Button_get_sfen" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button_get_sfen" to="." method="_on_button_get_sfen_pressed"]
+[connection signal="pressed" from="Button_set_sfen" to="." method="_on_button_set_sfen_pressed"]

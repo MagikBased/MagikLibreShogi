@@ -59,8 +59,10 @@ const PIECE_CHARACTERS = {
 }
 
 @onready var board = get_parent()
-@onready var button = $Button_get_sfen
+@onready var button_get_sfen = $Button_get_sfen
 @onready var lineEdit_sfen = $LineEdit_sfen
+@onready var button_set_sfen = $Button_set_sfen
+var regex = RegEx.new()
 
 func _ready():
 	pass
@@ -128,5 +130,59 @@ func get_hand_notation(count, piece_char):
 		return str(count if count > 1 else "") + (piece_char)
 	return ""
 
-func _on_button_pressed():
+func _on_button_get_sfen_pressed():
 	lineEdit_sfen.text = get_sfen_notation()
+
+func _on_button_set_sfen_pressed():
+	board.clear_board()
+	create_board_from_sfen(lineEdit_sfen.text)
+	
+func create_board_from_sfen(sfen: String):
+	var parts = sfen.split(" ")
+	var board_state = parts[0]
+	
+	regex.compile("([1-9]|[plnsgkbrPLNSGKBR])")
+	var matches = regex.search_all(board_state)
+	
+	var x = 0
+	var y = 0
+	for amatch in matches:
+		var match_string = amatch.get_string()
+		print(match_string)
+		if match_string.is_valid_int():
+			x += int(match_string)
+		else:
+			var piece_type = get_piece_type_from_symbol(match_string)
+			var piece_owner
+			if amatch.get_string() == match_string.to_upper():
+				piece_owner = Player.Sente
+			else:
+				piece_owner = Player.Gote
+			board.create_piece(piece_type,piece_owner,Vector2(board.boardSize.x - x,y+1))
+			x+=1
+		if x > board.boardSize.x - 1:
+			x = 0
+			y += 1
+			
+func get_piece_type_from_symbol(symbol: String) -> int:
+	symbol = symbol.to_upper()
+	match symbol:
+		"K":
+			return PieceType.King
+		"R":
+			return PieceType.Rook
+		"B":
+			return PieceType.Bishop
+		"G":
+			return PieceType.Gold
+		"S":
+			return PieceType.Silver
+		"N":
+			return PieceType.Knight
+		"L":
+			return PieceType.Lance
+		"P":
+			return PieceType.Pawn
+		_:
+			print("Unknown piece symbol: ", symbol)
+			return -1

@@ -74,6 +74,7 @@ func _draw():
 	draw_grid()
 
 func board_setup():
+	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
 	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
 	create_piece(PieceType.Knight, Player.Sente, Vector2(2,9))
 	create_piece(PieceType.Silver, Player.Sente, Vector2(3,9))
@@ -169,8 +170,8 @@ func get_all_moves_for_player(player):
 func get_all_moves_after_capture(player, capturePos):
 	allMovesAfterCapture = []
 	var gamePieces = []
-	var capturePieceIndex
-	capturePieceIndex = piecesOnBoard.find(capturePos)
+	var _capturePieceIndex
+	_capturePieceIndex = piecesOnBoard.find(capturePos)
 	for piece in pieceData:
 		if player == Player.Sente:
 			if piece[1] == Player.Sente:
@@ -207,13 +208,13 @@ func is_in_check(player):
 	if player == Player.Sente:
 		get_all_moves_for_player(Player.Gote)
 		kingPosition = find_king(Player.Sente)
-		print("Sente kingPos " + str(kingPosition))
-		print("all moves in is in check "+str(allMoves))
+		#print("Sente kingPos " + str(kingPosition))
+		#print("all moves in is in check "+str(allMoves))
 		if kingPosition[0] in allMoves:
 			senteInCheck = true
 		else:
 			senteInCheck = false
-		print("Is in check? " + str(senteInCheck))
+		#print("Is in check? " + str(senteInCheck))
 	
 	if player == Player.Gote:
 		get_all_moves_for_player(Player.Sente)
@@ -224,3 +225,22 @@ func is_in_check(player):
 			goteInCheck = true
 		else:
 			goteInCheck = false
+		#print("Is in check? " + str(goteInCheck))
+
+func clear_board():
+	for piece in get_parent().get_children():
+		#print(piece_scene.get_class())
+		if piece.is_in_group("piece"):
+			piece.queue_free()
+	piecesOnBoard = []
+	sentePiecesOnBoard = []
+	gotePiecesOnBoard = []
+	pieceData = []
+	allMoves = []
+	allMovesAfterCapture = []
+	senteInCheck = false
+	goteInCheck = false
+	inHandSente.update_in_hand(-1,0)
+	inHandGote.update_in_hand(-1,0)
+	inHandSente.piecesInHand = [0,0,0,0,0,0,0]
+	inHandGote.piecesInHand = [0,0,0,0,0,0,0]
