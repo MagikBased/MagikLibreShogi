@@ -136,7 +136,7 @@ func _on_button_get_sfen_pressed():
 func _on_button_set_sfen_pressed():
 	board.clear_board()
 	create_board_from_sfen(lineEdit_sfen.text)
-	
+
 func create_board_from_sfen(sfen: String):
 	var parts = sfen.split(" ")
 	var board_state = parts[0]
@@ -163,7 +163,7 @@ func create_board_from_sfen(sfen: String):
 		if x > board.boardSize.x - 1:
 			x = 0
 			y += 1
-			
+
 func get_piece_type_from_symbol(symbol: String) -> int:
 	symbol = symbol.to_upper()
 	match symbol:

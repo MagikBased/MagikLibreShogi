@@ -8,7 +8,13 @@ enum PieceType{
 	Silver,
 	Gold,
 	Bishop,
-	Rook
+	Rook,
+	PromotedPawn,
+	PromotedLance,
+	PromotedKnight,
+	PromotedSilver,
+	PromotedBishop,
+	PromotedRook
 }
 enum Player{
 	Sente,
@@ -189,7 +195,6 @@ func get_all_moves_after_capture(player, capturePos):
 					for i in instance_from_id(k[2]).valid_moves:
 						if !(i in allMoves):
 							allMoves.append(i)
-	
 
 func find_king(player):
 	var kingPos = []
