@@ -133,7 +133,8 @@ func set_piece_type():
 			sprite_texture = null
 	texture = sprite_texture
 
-func get_valid_moves(coordinate):
+func get_valid_moves(coordinate, simulatedMoveOrigin = null):
+	var isSimulatedMove = simulatedMoveOrigin != null
 	var move_direction
 	var possibleMoves = []
 	valid_moves = []
@@ -242,21 +243,30 @@ func get_valid_moves(coordinate):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
+	if isSimulatedMove:
+		return valid_moves 
 
-func check_move_legality(move):
+func check_move_legality(move, simulatedMoveOrigin = null):
 	if !is_inside_board(move):
 		return false
 	if can_capture(move):
 		return true
-	if is_space_taken(move):
+	if is_space_taken(move, simulatedMoveOrigin):
 		return false
 	return true
 
 func is_inside_board(move):
 	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
 		
-func is_space_taken(move):
-	return move in boardSprite.piecesOnBoard
+func is_space_taken(move, simulatedMoveOrigin = null):
+	if simulatedMoveOrigin != null:
+		var simulatedPiecesOnBoard = boardSprite.piecesOnBoard
+		var simulatedMoveIndex = simulatedPiecesOnBoard.find(simulatedMoveOrigin)
+		simulatedPiecesOnBoard.remove_at(simulatedMoveIndex)
+		#simulatedPiecesOnBoard.append(move)
+		return move in simulatedPiecesOnBoard
+	else:
+		return move in boardSprite.piecesOnBoard
 
 func can_capture(move):
 	if is_space_taken(move):
@@ -334,7 +344,6 @@ func move_piece(file,rank):
 	boardSprite.is_in_check(Player.Sente)
 	boardSprite.is_in_check(Player.Gote)
 
-
 func capture_piece(file,rank):
 	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
 	var captured_id
@@ -397,3 +406,47 @@ func can_promote(rank):
 		elif pieceOwner == Player.Gote and rank >= 7:
 			return true
 	return false
+
+func king_under_attack_vector(player):
+	var king_position = boardSprite.find_king(player)
+	var attack_vectors = {
+		"horizontal": [],
+		"diagonal": [],
+		"adjacent": [],
+		"knight": []
+	}
+	attack_vectors["horizontal"] = check_attack_vectors_horizontal_vertical(king_position, player)
+
+func check_attack_vectors_horizontal_vertical(king_position, player):
+	var threats = []
+	var move_direction
+	if player == Player.Sente:
+		move_direction = -1
+	else:
+		move_direction = 1
+	threats += check_attack_vectors_direction(king_position, Vector2(-1,0),player)
+	threats += check_attack_vectors_direction(king_position, Vector2(1,0),player)
+	threats += check_attack_vectors_direction(king_position, Vector2(0,1),player)
+	threats += check_attack_vectors_direction(king_position, Vector2(0,-1),player)
+	
+	return threats
+	
+func check_attack_vectors_direction(start_pos, direction,player):
+	var threats = []
+	var move_direction
+	var current_pos = start_pos + direction
+	var opponent = Player.Gote if player == Player.Sente else Player.Sente
+	if player == Player.Sente:
+		move_direction = -1
+	else:
+		move_direction = 1
+	while is_inside_board(current_pos):
+		if boardSprite.piecesOnBoard.has(current_pos):
+			var pieceIndex = boardSprite.piecesOnBoard.find(current_pos)
+			if boardSprite.pieceData[pieceIndex][1] == opponent:
+				if boardSprite.pieceData[pieceIndex][0] == PieceType.Rook or boardSprite.pieceData[pieceIndex][0] == PieceType.PromotedRook:
+					threats += current_pos
+					break
+		current_pos += direction
+		
+	return threats

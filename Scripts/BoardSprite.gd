@@ -54,6 +54,7 @@ func _ready():
 	#await(get_tree().create_timer(1).timeout)
 	#get_all_moves_after_capture(Player.Sente, Vector2(5,3))
 	await(get_tree().create_timer(1).timeout)
+	#get_all_moves_for_player(Player.Sente,Vector2(1,7),Vector2(1,6))
 	get_all_moves_for_player(Player.Sente)
 	#print(pieceData)
 	#print(piecesOnBoard)
@@ -150,18 +151,43 @@ func create_piece(piece_name,piece_owner,starting_position):
 	piecesOnBoard.append(starting_position)
 	pieceData.append([piece.pieceType, piece.pieceOwner, piece.get_instance_id()])
 
-func get_all_moves_for_player(player):
+func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveDestination = null):
+	var isSimulatedMove = simulatedMoveOrigin != null and simulatedMoveDestination != null
+	var simulatedPiecesOnBoard = piecesOnBoard if isSimulatedMove else []
+	var simulatedPieceData = pieceData if isSimulatedMove else []
+	var simulatedMoves = []
+	#[pieceType, pieceOwner, pieceID]
+	
+	if isSimulatedMove:
+		var simulatedMoveIndex = simulatedPiecesOnBoard.find(simulatedMoveOrigin)
+		var simulatedPieceDataValues = simulatedPieceData[simulatedMoveIndex]
+		simulatedPiecesOnBoard.remove_at(simulatedMoveIndex)
+		simulatedPieceData.remove_at(simulatedMoveIndex)
+		simulatedPiecesOnBoard.append(simulatedMoveOrigin)
+		simulatedPieceData.append(simulatedPieceDataValues)
+	
+	var pieceDataToCheck = simulatedPieceData if isSimulatedMove else pieceData
+	
 	allMoves = []
 	var gamePieces = []
-	for piece in pieceData:
+	for piece in pieceDataToCheck:
 		if player == Player.Sente:
 			if piece[1] == Player.Sente:
 				gamePieces.append(piece)
 				for j in gamePieces:
-					instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition)
-					for i in instance_from_id(j[2]).valid_moves:
-						if !(i in allMoves):
-							allMoves.append(i)
+					if !isSimulatedMove:
+						instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition)
+						for i in instance_from_id(j[2]).valid_moves:
+							if !(i in allMoves):
+								allMoves.append(i)
+					else:
+						simulatedMoves = instance_from_id(j[2]).get_valid_moves(simulatedMoveDestination, simulatedMoveOrigin)
+						if instance_from_id(j[2]).currentPosition == simulatedMoveOrigin:
+							print(simulatedMoves)
+						for t in simulatedMoves:
+							if !(t in allMoves):
+								allMoves.append(t)
+								#print(allMoves)
 
 		elif player == Player.Gote:
 			if piece[1] == Player.Gote:
@@ -171,7 +197,11 @@ func get_all_moves_for_player(player):
 					for i in instance_from_id(k[2]).valid_moves:
 						if !(i in allMoves):
 							allMoves.append(i)
-	#print("all moves in get all moves "+str(allMoves))
+	if isSimulatedMove:
+		print("all moves in get all moves "+str(allMoves))
+	else:
+		print("all moves in get all moves "+str(allMoves))
+	#return simulatedAllMoves if isSimulatedMove else null
 
 func get_all_moves_after_capture(player, capturePos):
 	allMovesAfterCapture = []
