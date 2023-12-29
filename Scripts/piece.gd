@@ -49,6 +49,8 @@ func _ready():
 	if pieceOwner == Player.Gote:
 		rotation_degrees += 180
 	set_process_input(true)
+	if pieceType == PieceType.King and pieceOwner == Player.Sente:
+		check_attack_vectors_horizontal_vertical(currentPosition,pieceOwner)
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT:
@@ -428,12 +430,13 @@ func check_attack_vectors_horizontal_vertical(king_position, player):
 	threats += check_attack_vectors_direction(king_position, Vector2(1,0),player)
 	threats += check_attack_vectors_direction(king_position, Vector2(0,1),player)
 	threats += check_attack_vectors_direction(king_position, Vector2(0,-1),player)
-	
+	print(threats)
 	return threats
 	
 func check_attack_vectors_direction(start_pos, direction,player):
 	var threats = []
 	var move_direction
+	var allied_pieces_in_path = []
 	var current_pos = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
 	if player == Player.Sente:
@@ -443,10 +446,13 @@ func check_attack_vectors_direction(start_pos, direction,player):
 	while is_inside_board(current_pos):
 		if boardSprite.piecesOnBoard.has(current_pos):
 			var pieceIndex = boardSprite.piecesOnBoard.find(current_pos)
-			if boardSprite.pieceData[pieceIndex][1] == opponent:
+			
+			if boardSprite.pieceData[pieceIndex][1] == player:
+				allied_pieces_in_path.append(current_pos)
+			elif boardSprite.pieceData[pieceIndex][1] == opponent:
 				if boardSprite.pieceData[pieceIndex][0] == PieceType.Rook or boardSprite.pieceData[pieceIndex][0] == PieceType.PromotedRook:
-					threats += current_pos
+					threats.append(current_pos)
 					break
 		current_pos += direction
-		
+	print("allied pieces: " + str(allied_pieces_in_path))
 	return threats

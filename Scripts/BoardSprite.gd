@@ -30,6 +30,14 @@ var circleColor = Color(0,0,0)
 var selectedPiece = null
 var xMargin = 25
 
+var startX = squareSize / 2
+var startY = squareSize / 2
+var spacingX = squareSize
+var spacingY = squareSize
+var fontSize = 80
+var fontColor = Color(0, 0, 0)
+var font
+
 var piecesOnBoard = []
 var sentePiecesOnBoard = []
 var gotePiecesOnBoard = []
@@ -55,7 +63,7 @@ func _ready():
 	#get_all_moves_after_capture(Player.Sente, Vector2(5,3))
 	await(get_tree().create_timer(1).timeout)
 	#get_all_moves_for_player(Player.Sente,Vector2(1,7),Vector2(1,6))
-	get_all_moves_for_player(Player.Sente)
+	#get_all_moves_for_player(Player.Sente)
 	#print(pieceData)
 	#print(piecesOnBoard)
 
@@ -79,52 +87,60 @@ func draw_grid():
 
 func _draw():
 	draw_grid()
+	font = ThemeDB.fallback_font
+	var char_size = font.get_string_size("1",HORIZONTAL_ALIGNMENT_CENTER,-1,fontSize)
+	print(char_size)
+	for x in range(boardSize.x):
+		var number = str(boardSize.x - x)
+		draw_string(font, Vector2(startX + (x * spacingX) - (char_size.x / 2), startY - spacingY / 2 - (spacingY / 10)), number, HORIZONTAL_ALIGNMENT_CENTER, -1, fontSize,fontColor)
+	
+	for y in range(boardSize.y):
+		var number = str(y + 1)
+		draw_string(font, Vector2(texture.get_width() + startX - (spacingX / 2) + (spacingX / 10), startY + (char_size.y / 4) +  (y * spacingY)), number, HORIZONTAL_ALIGNMENT_CENTER, -1, fontSize,fontColor)
 
 func board_setup():
-	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
-	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
-	create_piece(PieceType.Knight, Player.Sente, Vector2(2,9))
-	create_piece(PieceType.Silver, Player.Sente, Vector2(3,9))
-	create_piece(PieceType.Gold, Player.Sente, Vector2(4,9))
-	create_piece(PieceType.King, Player.Sente, Vector2(5,9))
-	create_piece(PieceType.Gold, Player.Sente, Vector2(6,9))
-	create_piece(PieceType.Silver, Player.Sente, Vector2(7,9))
-	create_piece(PieceType.Knight, Player.Sente, Vector2(8,9))
-	create_piece(PieceType.Lance, Player.Sente, Vector2(9,9))
-	create_piece(PieceType.Bishop, Player.Sente, Vector2(8,8))
-	create_piece(PieceType.Rook, Player.Sente, Vector2(2,8))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(1,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(2,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(3,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(4,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(5,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(6,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(7,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(8,7))
-	create_piece(PieceType.Pawn, Player.Sente, Vector2(9,7))
 	
-	create_piece(PieceType.Lance, Player.Gote, Vector2(1,1))
-	create_piece(PieceType.Knight, Player.Gote, Vector2(2,1))
-	create_piece(PieceType.Silver, Player.Gote, Vector2(3,1))
-	create_piece(PieceType.Gold, Player.Gote, Vector2(4,1))
-	create_piece(PieceType.King, Player.Gote, Vector2(5,1))
-	create_piece(PieceType.Gold, Player.Gote, Vector2(6,1))
-	create_piece(PieceType.Silver, Player.Gote, Vector2(7,1))
-	create_piece(PieceType.Knight, Player.Gote, Vector2(8,1))
-	create_piece(PieceType.Lance, Player.Gote, Vector2(9,1))
-	create_piece(PieceType.Bishop, Player.Gote, Vector2(2,2))
-	create_piece(PieceType.Rook, Player.Gote, Vector2(8,2))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(1,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(2,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(3,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(4,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(5,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(6,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(7,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(8,3))
-	create_piece(PieceType.Pawn, Player.Gote, Vector2(9,3))
-	
-	#create_piece(PieceType.Rook, Player.Gote, Vector2(5,8))
+#	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
+#	create_piece(PieceType.Knight, Player.Sente, Vector2(2,9))
+#	create_piece(PieceType.Silver, Player.Sente, Vector2(3,9))
+#	create_piece(PieceType.Gold, Player.Sente, Vector2(4,9))
+#	create_piece(PieceType.King, Player.Sente, Vector2(5,9))
+#	create_piece(PieceType.Gold, Player.Sente, Vector2(6,9))
+#	create_piece(PieceType.Silver, Player.Sente, Vector2(7,9))
+#	create_piece(PieceType.Knight, Player.Sente, Vector2(8,9))
+#	create_piece(PieceType.Lance, Player.Sente, Vector2(9,9))
+#	create_piece(PieceType.Bishop, Player.Sente, Vector2(8,8))
+#	create_piece(PieceType.Rook, Player.Sente, Vector2(2,8))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(1,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(2,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(3,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(4,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(5,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(6,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(7,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(8,7))
+#	create_piece(PieceType.Pawn, Player.Sente, Vector2(9,7))
+#
+#	create_piece(PieceType.Lance, Player.Gote, Vector2(1,1))
+#	create_piece(PieceType.Knight, Player.Gote, Vector2(2,1))
+#	create_piece(PieceType.Silver, Player.Gote, Vector2(3,1))
+#	create_piece(PieceType.Gold, Player.Gote, Vector2(4,1))
+#	create_piece(PieceType.King, Player.Gote, Vector2(5,1))
+#	create_piece(PieceType.Gold, Player.Gote, Vector2(6,1))
+#	create_piece(PieceType.Silver, Player.Gote, Vector2(7,1))
+#	create_piece(PieceType.Knight, Player.Gote, Vector2(8,1))
+#	create_piece(PieceType.Lance, Player.Gote, Vector2(9,1))
+#	create_piece(PieceType.Bishop, Player.Gote, Vector2(2,2))
+#	create_piece(PieceType.Rook, Player.Gote, Vector2(8,2))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(1,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(2,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(3,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(4,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(5,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(6,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(7,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(8,3))
+#	create_piece(PieceType.Pawn, Player.Gote, Vector2(9,3))
 	
 	get_parent().add_child.call_deferred(inHandSente)
 	inHandSente.position = Vector2(texture.get_width() * scale.x,0)
@@ -136,6 +152,8 @@ func board_setup():
 	add_child(sfen_manager)
 	sfen_manager.scale *= 4
 	sfen_manager.position = Vector2 (texture.get_width() + (xMargin * 6 * sfen_manager.scale.x),0)
+	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
+	sfen_manager.create_board_from_sfen("lnsgkgsnl/4r2b1/9/9/9/9/9/4B2R1/LNSGKGSNL b - 1")
 
 func create_piece(piece_name,piece_owner,starting_position):
 	var piece_scene = load("res://Scenes/piece.tscn")

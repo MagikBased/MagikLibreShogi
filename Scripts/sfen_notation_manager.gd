@@ -148,7 +148,6 @@ func create_board_from_sfen(sfen: String):
 	var y = 0
 	for amatch in matches:
 		var match_string = amatch.get_string()
-		print(match_string)
 		if match_string.is_valid_int():
 			x += int(match_string)
 		else:
