@@ -140,5 +140,3 @@ func update_in_hand(piece, amount):
 		inHandBishop.update_pieces()
 		inHandRook.pieceCount = amount
 		inHandRook.update_pieces()
-	
-

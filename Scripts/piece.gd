@@ -51,7 +51,7 @@ func _ready():
 		rotation_degrees += 180
 	set_process_input(true)
 	if pieceType == PieceType.King and pieceOwner == Player.Sente:
-		check_attack_vectors_horizontal_vertical(currentPosition,pieceOwner)
+		check_attack_vectors(currentPosition,pieceOwner)
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT:
@@ -426,25 +426,28 @@ func king_under_attack_vector(player):
 		"adjacent": [],
 		"knight": []
 	}
-	attack_vectors["horizontal"] = check_attack_vectors_horizontal_vertical(king_position, player)
+	attack_vectors["horizontal"] = check_attack_vectors(king_position, player)
 
-func check_attack_vectors_horizontal_vertical(king_position, player):
+func check_attack_vectors(king_position, player):
 	var threats = []
 	var move_direction
 	if player == Player.Sente:
 		move_direction = -1
 	else:
 		move_direction = 1
-	threats += check_attack_vectors_direction(king_position, Vector2(-1,0),player)
-	threats += check_attack_vectors_direction(king_position, Vector2(1,0),player)
-	threats += check_attack_vectors_direction(king_position, Vector2(0,1),player)
-	threats += check_attack_vectors_direction(king_position, Vector2(0,-1),player)
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,0),player, [PieceType.Rook, PieceType.PromotedRook])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,0),player, [PieceType.Rook, PieceType.PromotedRook])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(0,move_direction),player, [PieceType.Rook, PieceType.PromotedRook, PieceType.Lance])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(0,-move_direction),player, [PieceType.Rook, PieceType.PromotedRook])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
+	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	print("Threats: " + str(threats))
 	return threats
 	
-func check_attack_vectors_direction(start_pos, direction,player):
+func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
 	var threats = []
-	var move_direction
 	var alliedPiecesInPath = []
 	var currentSpace = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
@@ -455,10 +458,6 @@ func check_attack_vectors_direction(start_pos, direction,player):
 	var threatenedSpaces = []
 	var spacesChecked = []
 	
-	if player == Player.Sente:
-		move_direction = -1
-	else:
-		move_direction = 1
 	while is_inside_board(currentSpace):
 		spacesChecked.append(currentSpace)
 		if boardSprite.piecesOnBoard.has(currentSpace):
@@ -471,7 +470,7 @@ func check_attack_vectors_direction(start_pos, direction,player):
 				else:
 					alliedPieceIndex = null
 			elif boardSprite.pieceData[pieceIndex][1] == opponent:
-				if boardSprite.pieceData[pieceIndex][0] == PieceType.Rook or boardSprite.pieceData[pieceIndex][0] == PieceType.PromotedRook:
+				if boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
 					threats.append(currentSpace)
 					threatenedSpaces = spacesChecked
 					break
@@ -480,5 +479,4 @@ func check_attack_vectors_direction(start_pos, direction,player):
 		if alliedPiece != null:
 			for space in threatenedSpaces:
 				alliedPiece.constrained_moves.append(space)
-			
 	return threats
