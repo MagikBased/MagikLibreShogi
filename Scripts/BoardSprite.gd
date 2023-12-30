@@ -21,6 +21,9 @@ enum Player{
 	Gote
 }
 
+#Deubg
+var startingBoard = "k3r4/9/4B4/4R4/r1BRKRB1r/4R4/4B4/9/4r4 b - 1"
+
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
 var squareSize = (texture.get_width()) / boardSize.x
@@ -89,7 +92,6 @@ func _draw():
 	draw_grid()
 	font = ThemeDB.fallback_font
 	var char_size = font.get_string_size("1",HORIZONTAL_ALIGNMENT_CENTER,-1,fontSize)
-	print(char_size)
 	for x in range(boardSize.x):
 		var number = str(boardSize.x - x)
 		draw_string(font, Vector2(startX + (x * spacingX) - (char_size.x / 2), startY - spacingY / 2 - (spacingY / 10)), number, HORIZONTAL_ALIGNMENT_CENTER, -1, fontSize,fontColor)
@@ -99,7 +101,6 @@ func _draw():
 		draw_string(font, Vector2(texture.get_width() + startX - (spacingX / 2) + (spacingX / 10), startY + (char_size.y / 4) +  (y * spacingY)), number, HORIZONTAL_ALIGNMENT_CENTER, -1, fontSize,fontColor)
 
 func board_setup():
-	
 #	create_piece(PieceType.Lance, Player.Sente, Vector2(1,9))
 #	create_piece(PieceType.Knight, Player.Sente, Vector2(2,9))
 #	create_piece(PieceType.Silver, Player.Sente, Vector2(3,9))
@@ -153,7 +154,7 @@ func board_setup():
 	sfen_manager.scale *= 4
 	sfen_manager.position = Vector2 (texture.get_width() + (xMargin * 6 * sfen_manager.scale.x),0)
 	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
-	sfen_manager.create_board_from_sfen("lnsgkgsnl/4r2b1/9/9/9/9/9/4B2R1/LNSGKGSNL b - 1")
+	sfen_manager.create_board_from_sfen(startingBoard)
 
 func create_piece(piece_name,piece_owner,starting_position):
 	var piece_scene = load("res://Scenes/piece.tscn")

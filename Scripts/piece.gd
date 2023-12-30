@@ -38,6 +38,7 @@ var selectionColor = Color(0,1,0,0.5)
 @onready var rectSize = Vector2(texture.get_width(),texture.get_height())
 
 var valid_moves = []
+var constrained_moves = []
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 var promotionWindow = load("res://Scenes/promotion_window.tscn")
 
@@ -245,6 +246,14 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
+				
+	if !constrained_moves.is_empty():
+		var valid_and_constrained_moves_intersection = []
+		for move in valid_moves:
+			if move in constrained_moves:
+				valid_and_constrained_moves_intersection.append(move)
+		valid_moves = valid_and_constrained_moves_intersection
+	
 	if isSimulatedMove:
 		return valid_moves 
 
@@ -430,29 +439,46 @@ func check_attack_vectors_horizontal_vertical(king_position, player):
 	threats += check_attack_vectors_direction(king_position, Vector2(1,0),player)
 	threats += check_attack_vectors_direction(king_position, Vector2(0,1),player)
 	threats += check_attack_vectors_direction(king_position, Vector2(0,-1),player)
-	print(threats)
+	print("Threats: " + str(threats))
 	return threats
 	
 func check_attack_vectors_direction(start_pos, direction,player):
 	var threats = []
 	var move_direction
-	var allied_pieces_in_path = []
-	var current_pos = start_pos + direction
+	var alliedPiecesInPath = []
+	var currentSpace = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
+	
+	var alliedPieceIndex
+	var alliedPiece 
+	
+	var threatenedSpaces = []
+	var spacesChecked = []
+	
 	if player == Player.Sente:
 		move_direction = -1
 	else:
 		move_direction = 1
-	while is_inside_board(current_pos):
-		if boardSprite.piecesOnBoard.has(current_pos):
-			var pieceIndex = boardSprite.piecesOnBoard.find(current_pos)
-			
+	while is_inside_board(currentSpace):
+		spacesChecked.append(currentSpace)
+		if boardSprite.piecesOnBoard.has(currentSpace):
+			var pieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
 			if boardSprite.pieceData[pieceIndex][1] == player:
-				allied_pieces_in_path.append(current_pos)
+				alliedPiecesInPath.append(currentSpace)
+				if alliedPiecesInPath.size() == 1:
+					alliedPieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
+					alliedPiece = instance_from_id(boardSprite.pieceData[alliedPieceIndex][2])
+				else:
+					alliedPieceIndex = null
 			elif boardSprite.pieceData[pieceIndex][1] == opponent:
 				if boardSprite.pieceData[pieceIndex][0] == PieceType.Rook or boardSprite.pieceData[pieceIndex][0] == PieceType.PromotedRook:
-					threats.append(current_pos)
+					threats.append(currentSpace)
+					threatenedSpaces = spacesChecked
 					break
-		current_pos += direction
-	print("allied pieces: " + str(allied_pieces_in_path))
+		currentSpace += direction
+	if alliedPiecesInPath.size() == 1:
+		if alliedPiece != null:
+			for space in threatenedSpaces:
+				alliedPiece.constrained_moves.append(space)
+			
 	return threats
