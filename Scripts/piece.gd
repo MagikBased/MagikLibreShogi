@@ -246,6 +246,14 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
+		var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
+		#boardSprite.get_all_moves_for_player(opponent)
+		var attacking_spaces_from_opponent = boardSprite.allMoves
+		var safe_moves = []
+		#for move in valid_moves:
+		#	if not move in attacking_spaces_from_opponent:
+		#		safe_moves.append(move)
+		#valid_moves = safe_moves
 				
 	if !constrained_moves.is_empty():
 		var valid_and_constrained_moves_intersection = []

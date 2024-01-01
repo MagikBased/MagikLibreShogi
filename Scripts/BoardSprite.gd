@@ -22,7 +22,7 @@ enum Player{
 }
 
 #Deubg
-var startingBoard = "b1k1l3b/9/2R3R2/3RBR3/r2BKB2r/3RBR3/2R3R2/9/b3r3b b - 1"
+var startingBoard = "1k1r5/9/9/9/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -58,6 +58,8 @@ var inHandGote = inHand.instantiate()
 
 var sfenManagerScript = load("res://Scenes/sfen_notation_manager.tscn")
 
+signal turn_start(player)
+signal turn_end(player)
 
 func _ready():
 	board_setup()
@@ -66,7 +68,7 @@ func _ready():
 	#get_all_moves_after_capture(Player.Sente, Vector2(5,3))
 	await(get_tree().create_timer(1).timeout)
 	#get_all_moves_for_player(Player.Sente,Vector2(1,7),Vector2(1,6))
-	get_all_moves_for_player(Player.Sente)
+	#get_all_moves_for_player(Player.Sente)
 	#print(pieceData)
 	#print(piecesOnBoard)
 
@@ -216,7 +218,8 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 					for i in instance_from_id(k[2]).valid_moves:
 						if !(i in allMoves):
 							allMoves.append(i)
-	#print("all moves in get all moves "+str(allMoves))
+	print("all moves in get all moves "+str(allMoves),player)
+	#return allMoves
 	#return simulatedAllMoves if isSimulatedMove else null
 
 func get_all_moves_after_capture(player, capturePos):
