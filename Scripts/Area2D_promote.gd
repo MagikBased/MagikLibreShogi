@@ -1,11 +1,13 @@
 extends Area2D
 
 var mouse_over = false
+#@onready var boardSprite = get_parent().get_parent().get_parent()
 
 func _input(event):
 	if mouse_over and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		get_parent().selected_promote(true)
-		queue_free()
+		get_parent().get_parent().get_parent().get_node("BoardSprite").emit_signal("turnEnd")
+		#queue_free()
 
 
 func _on_mouse_entered():

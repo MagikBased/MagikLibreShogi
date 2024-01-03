@@ -54,7 +54,7 @@ func _ready():
 		check_attack_vectors(currentPosition,pieceOwner)
 
 func _input(event):
-	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT and boardSprite.isPromoting == false:
 		if get_rect().has_point(to_local(event.position)):
 			selected = !selected
 			if !selected:
@@ -316,7 +316,6 @@ func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_
 		target_rank += delta_rank
 		target_file += delta_file
 
-
 func destroy_all_highlights():
 	for child in get_children():
 		if child.is_in_group("highlights"):
@@ -345,21 +344,21 @@ func move_piece(file,rank):
 		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 1) or (pieceType == PieceType.Knight and rank <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 9) or (pieceType == PieceType.Knight and rank >= 8))):
 			promoted = true
 			set_piece_type()
+			boardSprite.emit_signal("turnEnd")
 		else:
+			boardSprite.isPromoting = true
 			var promotionPrompt = promotionWindow.instantiate()
+			#await(get_tree().create_timer(1).timeout)
 			add_child(promotionPrompt)
 			promotionPrompt.position.y += rectSize.y / 2
+	else:
+		boardSprite.emit_signal("turnEnd")
 	if boardSprite.selectedPiece != null:
 		boardSprite.selectedPiece = null
 		destroy_all_highlights()
 		selected = false
 		valid_moves = []
-	if pieceOwner == Player.Sente:
-		boardSprite.playerTurn = Player.Gote
-		queue_redraw()
-	elif pieceOwner == Player.Gote:
-		boardSprite.playerTurn = Player.Sente
-		queue_redraw()
+	queue_redraw()
 	boardSprite.is_in_check(Player.Sente)
 	boardSprite.is_in_check(Player.Gote)
 

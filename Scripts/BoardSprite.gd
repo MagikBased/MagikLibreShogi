@@ -22,7 +22,8 @@ enum Player{
 }
 
 #Deubg
-var startingBoard = "1k1r5/9/9/9/4K4/9/9/9/9 b - 1"
+var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+#"1k1r5/9/9/9/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -49,6 +50,7 @@ var allMoves = []
 var allMovesAfterCapture = []
 var senteInCheck = false
 var goteInCheck = false
+var isPromoting = false
 var playerTurn = Player.Sente
 var turnCount = 1
 
@@ -58,19 +60,26 @@ var inHandGote = inHand.instantiate()
 
 var sfenManagerScript = load("res://Scenes/sfen_notation_manager.tscn")
 
-signal turn_start(player)
-signal turn_end(player)
+signal turnStart(player)
+signal turnEnd(player)
 
 func _ready():
 	board_setup()
-	#print(pieceData)
-	#await(get_tree().create_timer(1).timeout)
-	#get_all_moves_after_capture(Player.Sente, Vector2(5,3))
+	turnStart.connect(_on_turn_started)
+	turnEnd.connect(_on_turn_ended)
+	emit_signal("turnStart")
 	await(get_tree().create_timer(1).timeout)
 	#get_all_moves_for_player(Player.Sente,Vector2(1,7),Vector2(1,6))
 	#get_all_moves_for_player(Player.Sente)
 	#print(pieceData)
 	#print(piecesOnBoard)
+
+func _on_turn_started():
+	print("On Turn Started")
+
+func _on_turn_ended():
+	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
+	print("On turn ended")
 
 func find_square_center(file: int,rank: int) -> Vector2:
 	var centerX = (10 - file) * squareSize - squareSize / 2
@@ -218,7 +227,7 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 					for i in instance_from_id(k[2]).valid_moves:
 						if !(i in allMoves):
 							allMoves.append(i)
-	print("all moves in get all moves "+str(allMoves),player)
+	#print("all moves in get all moves "+str(allMoves),player)
 	#return allMoves
 	#return simulatedAllMoves if isSimulatedMove else null
 

@@ -11,7 +11,7 @@ enum PieceType{
 	Rook
 }
 
-var parentNode = get_parent()
+var parentNode = get_parent() #unused?
 var sprite_texture = null
 var sprite_texture_promoted = null
 @onready var selectPromote: Area2D = $Area2D_promote
@@ -40,7 +40,7 @@ func _ready():
 			sprite_texture_promoted = load("res://Images/Pieces/Promoted Rook.png")
 		_:
 			sprite_texture = null
-	
+
 func _draw():
 	draw_texture(sprite_texture_promoted,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
 	draw_texture(sprite_texture,Vector2(float(-texture.get_width())/2,float(texture.get_height()) / 2 - float(texture.get_height())/2),modulate)
@@ -49,5 +49,6 @@ func selected_promote(selection):
 	if selection:
 		get_parent().promoted = true
 		get_parent().set_piece_type()
+	get_parent().boardSprite.isPromoting = false
 	queue_free()
 
