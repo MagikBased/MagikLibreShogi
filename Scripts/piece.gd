@@ -136,7 +136,7 @@ func set_piece_type():
 			sprite_texture = null
 	texture = sprite_texture
 
-func get_valid_moves(coordinate, simulatedMoveOrigin = null):
+func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false):
 	var isSimulatedMove = simulatedMoveOrigin != null
 	var move_direction
 	var possibleMoves = []
@@ -159,7 +159,10 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 				valid_moves.append(moves)
 	if pieceType == PieceType.Lance or pieceType == PieceType.PromotedLance:
 		if !promoted:
-			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+			if !ignoreKing:
+				check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+			else:
+				check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction, true)
 		elif promoted:
 			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -209,10 +212,17 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 			if check_move_legality(moves):
 				valid_moves.append(moves)
 	if pieceType == PieceType.Bishop or pieceType == PieceType.PromotedBishop:
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction)
+		if !ignoreKing:
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction)
+		else:
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction,true)
+			
 		if promoted:
 			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
 			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y))
@@ -222,10 +232,16 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 				if check_move_legality(moves):
 					valid_moves.append(moves)
 	if pieceType == PieceType.Rook or pieceType == PieceType.PromotedRook:
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0)
+		if !ignoreKing:
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0)
+		else:
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction,true)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0,true)
 		if promoted:
 			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
@@ -246,14 +262,14 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-		var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
+		#var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
 		#boardSprite.get_all_moves_for_player(opponent)
-		var attacking_spaces_from_opponent = boardSprite.allMoves
+		var attacking_spaces_from_opponent = boardSprite.allMovesGote if pieceOwner == Player.Sente else boardSprite.allMovesSente
 		var safe_moves = []
-		#for move in valid_moves:
-		#	if not move in attacking_spaces_from_opponent:
-		#		safe_moves.append(move)
-		#valid_moves = safe_moves
+		for move in valid_moves:
+			if not move in attacking_spaces_from_opponent:
+				safe_moves.append(move)
+		valid_moves = safe_moves
 				
 	if !constrained_moves.is_empty():
 		var valid_and_constrained_moves_intersection = []
@@ -265,19 +281,21 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null):
 	if isSimulatedMove:
 		return valid_moves 
 
-func check_move_legality(move, simulatedMoveOrigin = null):
+func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if !is_inside_board(move):
 		return false
 	if can_capture(move):
 		return true
-	if is_space_taken(move, simulatedMoveOrigin):
+
+	if is_space_taken(move, simulatedMoveOrigin, ignoreKing):
 		return false
+
 	return true
 
 func is_inside_board(move):
 	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
 		
-func is_space_taken(move, simulatedMoveOrigin = null):
+func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if simulatedMoveOrigin != null:
 		var simulatedPiecesOnBoard = boardSprite.piecesOnBoard
 		var simulatedMoveIndex = simulatedPiecesOnBoard.find(simulatedMoveOrigin)
@@ -285,7 +303,17 @@ func is_space_taken(move, simulatedMoveOrigin = null):
 		#simulatedPiecesOnBoard.append(move)
 		return move in simulatedPiecesOnBoard
 	else:
-		return move in boardSprite.piecesOnBoard
+		if !ignoreKing:
+			return move in boardSprite.piecesOnBoard
+		else:
+			if move in boardSprite.piecesOnBoard:
+				var pieceIndex = boardSprite.piecesOnBoard.find(move)
+				if boardSprite.pieceData[pieceIndex][0] != PieceType.King:
+					return true
+				else:
+					return false
+			else:
+				return false
 
 func can_capture(move):
 	if is_space_taken(move):
@@ -297,10 +325,10 @@ func can_capture(move):
 				return true
 	return false
 
-func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file):
+func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file, ignoreKing = false):
 	var target_rank = start_rank + delta_rank
 	var target_file = start_file + delta_file
-	while check_move_legality(Vector2(target_rank,target_file)):
+	while check_move_legality(Vector2(target_rank,target_file), null, ignoreKing):
 		valid_move.append(Vector2(target_rank,target_file))
 		if can_capture(Vector2 (target_rank,target_file)):
 			break
