@@ -23,7 +23,7 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k3r4/9/9/9/9/9/4K4/9/9 b - 1"
+var startingBoard = "k3r4/9/9/9/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -78,9 +78,11 @@ func _ready():
 
 func _on_turn_started():
 	get_all_moves_for_player(Player.Sente,null,null,true)
+	print("Turn Start")
 	get_all_moves_for_player(Player.Gote,null,null,true)
-	print("Sente Moves: ",allMovesSente)
-	print("Gote Moves: ",allMovesGote)
+	print("Turn Start")
+	#print("Sente Moves: ",allMovesSente)
+	#print("Gote Moves: ",allMovesGote)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
@@ -278,7 +280,7 @@ func find_king(player):
 			kingPos.append(instance_from_id(kingIndex).currentPosition)
 	return kingPos
 
-func is_in_check(player):
+func is_in_check(player):  #currently messes with king legal moves, needs rework.
 	var kingPosition = []
 	if player == Player.Sente:
 		get_all_moves_for_player(Player.Gote)

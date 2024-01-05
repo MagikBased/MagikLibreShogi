@@ -263,8 +263,12 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false)
 			if check_move_legality(moves):
 				valid_moves.append(moves)
 		#var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
-		#boardSprite.get_all_moves_for_player(opponent)
 		var attacking_spaces_from_opponent = boardSprite.allMovesGote if pieceOwner == Player.Sente else boardSprite.allMovesSente
+#		if pieceOwner == Player.Sente:
+#			print("Gote: ",boardSprite.allMovesGote,get_instance_id())
+#		elif pieceOwner == Player.Gote:
+#			print("Sente: ",boardSprite.allMovesSente,get_instance_id())
+		print("AttackingSpacesFromOpponent: ",attacking_spaces_from_opponent,pieceOwner)
 		var safe_moves = []
 		for move in valid_moves:
 			if not move in attacking_spaces_from_opponent:
@@ -285,6 +289,7 @@ func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if !is_inside_board(move):
 		return false
 	if can_capture(move):
+		print("Can Capture")
 		return true
 
 	if is_space_taken(move, simulatedMoveOrigin, ignoreKing):
@@ -316,7 +321,7 @@ func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false):
 				return false
 
 func can_capture(move):
-	if is_space_taken(move):
+	if is_space_taken(move,null,true):
 		if pieceOwner == Player.Sente:
 			if move in boardSprite.gotePiecesOnBoard:
 				return true
@@ -387,8 +392,8 @@ func move_piece(file,rank):
 		selected = false
 		valid_moves = []
 	queue_redraw()
-	boardSprite.is_in_check(Player.Sente)
-	boardSprite.is_in_check(Player.Gote)
+	#boardSprite.is_in_check(Player.Sente)
+	#boardSprite.is_in_check(Player.Gote)
 
 func capture_piece(file,rank):
 	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
