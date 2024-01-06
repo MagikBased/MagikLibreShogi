@@ -156,11 +156,13 @@ func drop_piece(file,rank):
 	destroy_all_highlights()
 	if pieceOwner == Player.Sente:
 		boardSprite.inHandSente.update_in_hand(pieceType,-1)
-		boardSprite.playerTurn = Player.Gote
+		boardSprite.emit_signal("turnEnd")
+		#boardSprite.playerTurn = Player.Gote
 		queue_redraw()
 	elif pieceOwner == Player.Gote:
 		boardSprite.inHandGote.update_in_hand(pieceType,-1)
-		boardSprite.playerTurn = Player.Sente
+		boardSprite.emit_signal("turnEnd")
+		#boardSprite.playerTurn = Player.Sente
 		queue_redraw()
 
 func update_pieces():

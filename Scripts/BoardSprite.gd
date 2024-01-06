@@ -23,7 +23,7 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k3r4/9/9/9/4K4/9/9/9/9 b - 1"
+var startingBoard = "k8/9/9/3r5/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -84,6 +84,7 @@ func _on_turn_started():
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
+	await(get_tree().create_timer(.001).timeout)
 	emit_signal("turnStart")
 
 func find_square_center(file: int,rank: int) -> Vector2:
