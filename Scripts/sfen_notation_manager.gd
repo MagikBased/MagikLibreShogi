@@ -85,6 +85,8 @@ func get_sfen_notation():
 				var piece_owner = piece_data[1]
 				var piece_type = piece_data[0]
 				var piece_char = PIECE_CHARACTERS[piece_owner][piece_type]
+				if instance_from_id(piece_data[2]).promoted:
+					piece_char = "+" + piece_char
 				sfen += piece_char
 		if empty_count > 0:
 			sfen += str(empty_count)
@@ -141,23 +143,29 @@ func create_board_from_sfen(sfen: String):
 	var parts = sfen.split(" ")
 	var board_state = parts[0]
 	
-	regex.compile("([1-9]|[plnsgkbrPLNSGKBR])")
+	regex.compile("([1-9]|\\+[plnsgkbrPLNSGKBR]|[plnsgkbrPLNSGKBR])")
 	var matches = regex.search_all(board_state)
 	
 	var x = 0
 	var y = 0
 	for amatch in matches:
 		var match_string = amatch.get_string()
+		var is_promoted = match_string.begins_with("+")
+		
+		if is_promoted:
+			match_string = match_string.substr(1)
+			
 		if match_string.is_valid_int():
 			x += int(match_string)
 		else:
 			var piece_type = get_piece_type_from_symbol(match_string)
 			var piece_owner
-			if amatch.get_string() == match_string.to_upper():
+			print(amatch.get_string())
+			if match_string == match_string.to_upper():
 				piece_owner = Player.Sente
 			else:
 				piece_owner = Player.Gote
-			board.create_piece(piece_type,piece_owner,Vector2(board.boardSize.x - x,y+1))
+			board.create_piece(piece_type,piece_owner,Vector2(board.boardSize.x - x,y+1),is_promoted)
 			x+=1
 		if x > board.boardSize.x - 1:
 			x = 0

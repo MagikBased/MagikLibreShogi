@@ -22,8 +22,8 @@ enum Player{
 }
 
 #Deubg
-#var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k8/9/9/3r5/4K4/9/9/9/9 b - 1"
+var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+#var startingBoard = "k8/9/4g4/4r4/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -173,7 +173,7 @@ func board_setup():
 	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
 	sfen_manager.create_board_from_sfen(startingBoard)
 
-func create_piece(piece_name,piece_owner,starting_position):
+func create_piece(piece_name,piece_owner,starting_position, promoted = false):
 	var piece_scene = load("res://Scenes/piece.tscn")
 	var piece = piece_scene.instantiate()
 	piece.pieceType = piece_name
@@ -186,6 +186,8 @@ func create_piece(piece_name,piece_owner,starting_position):
 	get_parent().add_child.call_deferred(piece)
 	piecesOnBoard.append(starting_position)
 	pieceData.append([piece.pieceType, piece.pieceOwner, piece.get_instance_id()])
+	if promoted:
+		piece.promoted = true
 
 func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveDestination = null, ignoreKing = false):
 	var isSimulatedMove = simulatedMoveOrigin != null and simulatedMoveDestination != null

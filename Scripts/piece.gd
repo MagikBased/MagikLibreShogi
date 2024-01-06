@@ -270,12 +270,11 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false)
 		#elif pieceOwner == Player.Gote:
 			#print("Sente: ",boardSprite.allMovesSenteIgnoreKing,get_instance_id())
 		var opponentKingPosition = boardSprite.find_king(opponent)
-		var oppKingAdjacentSquares = []
 		for direction in adjacentSquares:
 			var adjacentSquare = opponentKingPosition[0] + direction
 			if is_inside_board(adjacentSquare) and !(adjacentSquare in attacking_spaces_from_opponent):
 				attacking_spaces_from_opponent.append(adjacentSquare)
-		print("attacking spaces: ",attacking_spaces_from_opponent)
+		#print("attacking spaces: ",attacking_spaces_from_opponent)
 		var safe_moves = []
 		for move in valid_moves:
 			if not move in attacking_spaces_from_opponent:
