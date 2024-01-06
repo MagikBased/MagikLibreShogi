@@ -39,6 +39,7 @@ var selectionColor = Color(0,1,0,0.5)
 
 var valid_moves = []
 var constrained_moves = []
+var adjacentSquares = [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1),Vector2(-1,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1)]
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 var promotionWindow = load("res://Scenes/promotion_window.tscn")
 
@@ -262,19 +263,26 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false)
 		for moves in possibleMoves:
 			if check_move_legality(moves):
 				valid_moves.append(moves)
-		#var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
-		var attacking_spaces_from_opponent = boardSprite.allMovesGote if pieceOwner == Player.Sente else boardSprite.allMovesSente
-#		if pieceOwner == Player.Sente:
-#			print("Gote: ",boardSprite.allMovesGote,get_instance_id())
-#		elif pieceOwner == Player.Gote:
-#			print("Sente: ",boardSprite.allMovesSente,get_instance_id())
-		print("AttackingSpacesFromOpponent: ",attacking_spaces_from_opponent,pieceOwner)
+		var opponent = Player.Gote if pieceOwner == Player.Sente else Player.Sente
+		var attacking_spaces_from_opponent = boardSprite.allMovesGoteIgnoreKing if pieceOwner == Player.Sente else boardSprite.allMovesSenteIgnoreKing
+		#if pieceOwner == Player.Sente:
+			#print("Gote: ",boardSprite.allMovesGoteIgnoreKing,get_instance_id())
+		#elif pieceOwner == Player.Gote:
+			#print("Sente: ",boardSprite.allMovesSenteIgnoreKing,get_instance_id())
+		var opponentKingPosition = boardSprite.find_king(opponent)
+		var oppKingAdjacentSquares = []
+		for direction in adjacentSquares:
+			var adjacentSquare = opponentKingPosition[0] + direction
+			if is_inside_board(adjacentSquare) and !(adjacentSquare in attacking_spaces_from_opponent):
+				attacking_spaces_from_opponent.append(adjacentSquare)
+		print("attacking spaces: ",attacking_spaces_from_opponent)
 		var safe_moves = []
 		for move in valid_moves:
 			if not move in attacking_spaces_from_opponent:
 				safe_moves.append(move)
 		valid_moves = safe_moves
-				
+		
+		
 	if !constrained_moves.is_empty():
 		var valid_and_constrained_moves_intersection = []
 		for move in valid_moves:
@@ -289,7 +297,6 @@ func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if !is_inside_board(move):
 		return false
 	if can_capture(move):
-		print("Can Capture")
 		return true
 
 	if is_space_taken(move, simulatedMoveOrigin, ignoreKing):
@@ -392,8 +399,8 @@ func move_piece(file,rank):
 		selected = false
 		valid_moves = []
 	queue_redraw()
-	#boardSprite.is_in_check(Player.Sente)
-	#boardSprite.is_in_check(Player.Gote)
+	boardSprite.is_in_check(Player.Sente)
+	boardSprite.is_in_check(Player.Gote)
 
 func capture_piece(file,rank):
 	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
@@ -483,7 +490,7 @@ func check_attack_vectors(king_position, player):
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
-	print("Threats: " + str(threats))
+	#print("Threats: " + str(threats))
 	return threats
 	
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):

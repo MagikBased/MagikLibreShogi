@@ -49,6 +49,8 @@ var pieceData = [] #[pieceType, pieceOwner, pieceID]
 var allMoves = []
 var allMovesSente = []
 var allMovesGote = []
+var allMovesSenteIgnoreKing = []
+var allMovesGoteIgnoreKing = []
 var allMovesAfterCapture = []
 var senteInCheck = false
 var goteInCheck = false
@@ -78,11 +80,7 @@ func _ready():
 
 func _on_turn_started():
 	get_all_moves_for_player(Player.Sente,null,null,true)
-	print("Turn Start")
 	get_all_moves_for_player(Player.Gote,null,null,true)
-	print("Turn Start")
-	#print("Sente Moves: ",allMovesSente)
-	#print("Gote Moves: ",allMovesGote)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
@@ -222,13 +220,15 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 								allMoves.append(i)
 					else:
 						simulatedMoves = instance_from_id(j[2]).get_valid_moves(simulatedMoveDestination, simulatedMoveOrigin)
-						if instance_from_id(j[2]).currentPosition == simulatedMoveOrigin:
-							print(simulatedMoves)
+						#if instance_from_id(j[2]).currentPosition == simulatedMoveOrigin:
+							#print(simulatedMoves)
 						for t in simulatedMoves:
 							if !(t in allMoves):
 								allMoves.append(t)
 								#print(allMoves)
 			allMovesSente = allMoves
+			if ignoreKing:
+				allMovesSenteIgnoreKing = allMoves
 		elif player == Player.Gote:
 			if piece[1] == Player.Gote:
 				gamePieces.append(piece)
@@ -241,6 +241,8 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 						if !(i in allMoves):
 							allMoves.append(i)
 			allMovesGote = allMoves
+			if ignoreKing:
+				allMovesGoteIgnoreKing = allMoves
 	#print("all moves in get all moves "+str(allMoves),player)
 	#return allMoves
 	#return simulatedAllMoves if isSimulatedMove else null
