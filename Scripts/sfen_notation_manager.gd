@@ -1,6 +1,5 @@
 extends Node2D
 
-
 enum Player {
 	Sente,
 	Gote
@@ -58,14 +57,21 @@ const PIECE_CHARACTERS = {
 	}
 }
 
+var sfen_char_to_piece_type = {
+	"P": PieceType.Pawn, "L": PieceType.Lance, "N": PieceType.Knight, 
+	"S": PieceType.Silver, "G": PieceType.Gold, "B": PieceType.Bishop, "R": PieceType.Rook,
+	"p": PieceType.Pawn, "l": PieceType.Lance, "n": PieceType.Knight, 
+	"s": PieceType.Silver, "g": PieceType.Gold, "b": PieceType.Bishop, "r": PieceType.Rook
+}
+
 @onready var board = get_parent()
 @onready var button_get_sfen = $Button_get_sfen
 @onready var lineEdit_sfen = $LineEdit_sfen
 @onready var button_set_sfen = $Button_set_sfen
 var regex = RegEx.new()
 
-func _ready():
-	pass
+var pieceToIndex = {"P": 0, "L": 1, "N": 2, "S": 3, "G": 4, "B": 5, "R": 6, "p": 0, "l": 1, "n": 2, "s": 3, "g": 4, "b": 5, "r": 6}
+
 
 func get_sfen_notation():
 	var sfen = ""
@@ -127,21 +133,10 @@ func get_sfen_notation():
 
 	return sfen
 
-func get_hand_notation(count, piece_char):
-	if count > 0:
-		return str(count if count > 1 else "") + (piece_char)
-	return ""
-
-func _on_button_get_sfen_pressed():
-	lineEdit_sfen.text = get_sfen_notation()
-
-func _on_button_set_sfen_pressed():
-	board.clear_board()
-	create_board_from_sfen(lineEdit_sfen.text)
-
 func create_board_from_sfen(sfen: String):
 	var parts = sfen.split(" ")
 	var board_state = parts[0]
+	var in_hand_pieces = parts[2]
 	
 	regex.compile("([1-9]|\\+[plnsgkbrPLNSGKBR]|[plnsgkbrPLNSGKBR])")
 	var matches = regex.search_all(board_state)
@@ -160,7 +155,6 @@ func create_board_from_sfen(sfen: String):
 		else:
 			var piece_type = get_piece_type_from_symbol(match_string)
 			var piece_owner
-			print(amatch.get_string())
 			if match_string == match_string.to_upper():
 				piece_owner = Player.Sente
 			else:
@@ -170,6 +164,30 @@ func create_board_from_sfen(sfen: String):
 		if x > board.boardSize.x - 1:
 			x = 0
 			y += 1
+	
+	regex.compile("(\\d*[PLNSGKBRplnsgkbr])")
+	var in_hand_matches = regex.search_all(in_hand_pieces)
+	
+	for amatch in in_hand_matches:
+		var piece_string = amatch.get_string()
+		var count = 1
+		var piece_char
+		
+		if piece_string.length() > 1:
+			count = int(piece_string.substr(0,piece_string.length() - 1))
+			piece_char = piece_string[-1]
+		else:
+			piece_char = piece_string
+		var piece_type = sfen_char_to_piece_type[piece_char]
+		if piece_char == piece_char.to_upper():
+			board.inHandSente.update_in_hand(piece_type,count)
+		else:
+			board.inHandGote.update_in_hand(piece_type,count)
+
+func get_hand_notation(count, piece_char):
+	if count > 0:
+		return str(count if count > 1 else "") + (piece_char)
+	return ""
 
 func get_piece_type_from_symbol(symbol: String) -> int:
 	symbol = symbol.to_upper()
@@ -193,3 +211,10 @@ func get_piece_type_from_symbol(symbol: String) -> int:
 		_:
 			print("Unknown piece symbol: ", symbol)
 			return -1
+
+func _on_button_get_sfen_pressed():
+	lineEdit_sfen.text = get_sfen_notation()
+
+func _on_button_set_sfen_pressed():
+	board.clear_board()
+	create_board_from_sfen(lineEdit_sfen.text)

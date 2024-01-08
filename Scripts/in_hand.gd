@@ -90,7 +90,7 @@ func _ready():
 		inHandRook.pieceType = PieceType.Rook
 		inHandRook.pieceOwner = Player.Gote
 		
-	await(get_tree().create_timer(0).timeout)
+	#await(get_tree().create_timer(0).timeout)
 	#update_in_hand()
 
 func _draw():
@@ -125,7 +125,7 @@ func update_in_hand(piece, amount):
 	if piece == PieceType.Rook:
 		inHandRook.pieceCount += amount
 		inHandRook.update_pieces()
-	if piece == -1:
+	if piece == -1: #all pieces
 		inHandPawn.pieceCount = amount
 		inHandPawn.update_pieces()
 		inHandLance.pieceCount = amount
