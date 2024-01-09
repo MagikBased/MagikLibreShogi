@@ -87,7 +87,6 @@ func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
 	var king_pos = find_king(playerTurn)[0]
 	var king_instance = instance_from_id(pieceData[piecesOnBoard.find(king_pos)][2])
-	print(king_instance)
 	king_instance.check_attack_vectors(king_pos,playerTurn)
 	#await(get_tree().create_timer(.001).timeout)
 	for piece in get_tree().get_nodes_in_group("piece"):

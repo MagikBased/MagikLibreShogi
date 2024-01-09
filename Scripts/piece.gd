@@ -424,34 +424,34 @@ func capture_piece(file,rank):
 
 func add_piece_to_hand(piece_data):
 	if pieceOwner == Player.Sente: #check for piece owner
-		if piece_data[0] == PieceType.Pawn:
+		if piece_data[0] == PieceType.Pawn or piece_data[0] == PieceType.PromotedPawn:
 			boardSprite.inHandSente.update_in_hand(PieceType.Pawn,1)
-		if piece_data[0] == PieceType.Lance:
+		if piece_data[0] == PieceType.Lance or piece_data[0] == PieceType.PromotedLance:
 			boardSprite.inHandSente.update_in_hand(PieceType.Lance,1)
-		if piece_data[0] == PieceType.Knight:
+		if piece_data[0] == PieceType.Knight or piece_data[0] == PieceType.PromotedKnight:
 			boardSprite.inHandSente.update_in_hand(PieceType.Knight,1)
-		if piece_data[0] == PieceType.Silver:
+		if piece_data[0] == PieceType.Silver or piece_data[0] == PieceType.PromotedSilver:
 			boardSprite.inHandSente.update_in_hand(PieceType.Silver,1)
 		if piece_data[0] == PieceType.Gold:
 			boardSprite.inHandSente.update_in_hand(PieceType.Gold,1)
-		if piece_data[0] == PieceType.Bishop:
+		if piece_data[0] == PieceType.Bishop or piece_data[0] == PieceType.PromotedBishop:
 			boardSprite.inHandSente.update_in_hand(PieceType.Bishop,1)
-		if piece_data[0] == PieceType.Rook:
+		if piece_data[0] == PieceType.Rook or piece_data[0] == PieceType.PromotedRook:
 			boardSprite.inHandSente.update_in_hand(PieceType.Rook,1)
 	if pieceOwner == Player.Gote:
-		if piece_data[0] == PieceType.Pawn:
+		if piece_data[0] == PieceType.Pawn or piece_data[0] == PieceType.PromotedPawn:
 			boardSprite.inHandGote.update_in_hand(PieceType.Pawn,1)
-		if piece_data[0] == PieceType.Lance:
+		if piece_data[0] == PieceType.Lance or piece_data[0] == PieceType.PromotedLance:
 			boardSprite.inHandGote.update_in_hand(PieceType.Lance,1)
-		if piece_data[0] == PieceType.Knight:
+		if piece_data[0] == PieceType.Knight or piece_data[0] == PieceType.PromotedKnight:
 			boardSprite.inHandGote.update_in_hand(PieceType.Knight,1)
-		if piece_data[0] == PieceType.Silver:
+		if piece_data[0] == PieceType.Silver or piece_data[0] == PieceType.PromotedSilver:
 			boardSprite.inHandGote.update_in_hand(PieceType.Silver,1)
 		if piece_data[0] == PieceType.Gold:
 			boardSprite.inHandGote.update_in_hand(PieceType.Gold,1)
-		if piece_data[0] == PieceType.Bishop:
+		if piece_data[0] == PieceType.Bishop or piece_data[0] == PieceType.PromotedBishop:
 			boardSprite.inHandGote.update_in_hand(PieceType.Bishop,1)
-		if piece_data[0] == PieceType.Rook:
+		if piece_data[0] == PieceType.Rook or piece_data[0] == PieceType.PromotedRook:
 			boardSprite.inHandGote.update_in_hand(PieceType.Rook,1)
 
 func can_promote(rank):
