@@ -80,8 +80,8 @@ func _ready():
 	#print(piecesOnBoard)
 
 func _on_turn_started():
-	get_all_moves_for_player(Player.Sente,null,null,true)
-	get_all_moves_for_player(Player.Gote,null,null,true)
+	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true)
+	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente

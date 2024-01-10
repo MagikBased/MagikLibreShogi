@@ -304,10 +304,8 @@ func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false):
 	return true
 
 func is_inside_board(move):
-	print(boardSprite.boardSize)
-	
 	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
-		
+
 func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if simulatedMoveOrigin != null:
 		var simulatedPiecesOnBoard = boardSprite.piecesOnBoard
