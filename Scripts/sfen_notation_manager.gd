@@ -180,9 +180,10 @@ func create_board_from_sfen(sfen: String):
 			piece_char = piece_string
 		var piece_type = sfen_char_to_piece_type[piece_char]
 		if piece_char == piece_char.to_upper():
-			board.inHandSente.update_in_hand(piece_type,count)
+			board.inHandSente.call_deferred("update_in_hand",piece_type,count)
+			
 		else:
-			board.inHandGote.update_in_hand(piece_type,count)
+			board.inHandGote.call_deferred("update_in_hand",piece_type,count)
 
 func get_hand_notation(count, piece_char):
 	if count > 0:

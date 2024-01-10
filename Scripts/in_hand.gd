@@ -106,37 +106,37 @@ func _draw():
 func update_in_hand(piece, amount):
 	if piece == PieceType.Pawn:
 		inHandPawn.pieceCount += amount
-		inHandPawn.update_pieces()
+		inHandPawn.call_deferred("update_pieces")
 	if piece == PieceType.Lance:
 		inHandLance.pieceCount += amount
-		inHandLance.update_pieces()
+		inHandLance.call_deferred("update_pieces")
 	if piece == PieceType.Knight:
 		inHandKnight.pieceCount += amount
-		inHandKnight.update_pieces()
+		inHandKnight.call_deferred("update_pieces")
 	if piece == PieceType.Silver:
 		inHandSilver.pieceCount += amount
-		inHandSilver.update_pieces()
+		inHandSilver.call_deferred("update_pieces")
 	if piece == PieceType.Gold:
 		inHandGold.pieceCount += amount
-		inHandGold.update_pieces()
+		inHandGold.call_deferred("update_pieces")
 	if piece == PieceType.Bishop:
 		inHandBishop.pieceCount += amount
-		inHandBishop.update_pieces()
+		inHandBishop.call_deferred("update_pieces")
 	if piece == PieceType.Rook:
 		inHandRook.pieceCount += amount
-		inHandRook.update_pieces()
+		inHandRook.call_deferred("update_pieces")
 	if piece == -1: #all pieces
 		inHandPawn.pieceCount = amount
-		inHandPawn.update_pieces()
+		inHandPawn.call_deferred("update_pieces")
 		inHandLance.pieceCount = amount
-		inHandLance.update_pieces()
+		inHandLance.call_deferred("update_pieces")
 		inHandKnight.pieceCount = amount
-		inHandKnight.update_pieces()
+		inHandKnight.call_deferred("update_pieces")
 		inHandSilver.pieceCount = amount
-		inHandSilver.update_pieces()
+		inHandSilver.call_deferred("update_pieces")
 		inHandGold.pieceCount = amount
-		inHandGold.update_pieces()
+		inHandGold.call_deferred("update_pieces")
 		inHandBishop.pieceCount = amount
-		inHandBishop.update_pieces()
+		inHandBishop.call_deferred("update_pieces")
 		inHandRook.pieceCount = amount
-		inHandRook.update_pieces()
+		inHandRook.call_deferred("update_pieces")
