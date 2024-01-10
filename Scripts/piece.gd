@@ -84,7 +84,11 @@ func _input(event):
 func _draw():
 	if selected:
 		draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
+	var sente_shade = Color(0.8,0.8,0.8)
+	if pieceOwner == Player.Gote:
 		draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
+	else:
+		draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),sente_shade)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)
