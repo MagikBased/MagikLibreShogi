@@ -24,6 +24,8 @@ enum Player{
 @onready var board = get_parent()
 @onready var boardSprite = board.get_node("BoardSprite")
 @onready var globalPieceScale = (boardSprite.texture.get_width() * boardSprite.scale.x) / (boardSprite.boardSize.x * texture.get_width())
+var sente_shader = preload("res://Shaders/piece.gdshader")
+@onready var selection_highlight = $selection_highlight
 @onready var boardPosition = board.global_position
 
 @export var pieceType = PieceType.Pawn
@@ -50,6 +52,10 @@ func _ready():
 	snap_to_grid()
 	if pieceOwner == Player.Gote:
 		rotation_degrees += 180
+	else:
+		var sente_material = ShaderMaterial.new()
+		sente_material.shader = sente_shader
+		material = sente_material
 	set_process_input(true)
 	if pieceType == PieceType.King and pieceOwner == Player.Sente:
 		check_attack_vectors(currentPosition,pieceOwner)
@@ -83,12 +89,15 @@ func _input(event):
 
 func _draw():
 	if selected:
-		draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
-	var sente_shade = Color(0.8,0.8,0.8)
-	if pieceOwner == Player.Gote:
-		draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
+		$selection_highlight.visible = true
 	else:
-		draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),sente_shade)
+		$selection_highlight.visible = false
+		#draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
+	#var sente_shade = Color(0.8,0.8,0.8)
+	#if pieceOwner == Player.Gote:
+	draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
+	#else:
+		#draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),sente_shade)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)

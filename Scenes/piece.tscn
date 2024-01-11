@@ -1,8 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://cttnd1k1swdno"]
+[gd_scene load_steps=4 format=3 uid="uid://cttnd1k1swdno"]
 
 [ext_resource type="Script" path="res://Scripts/piece.gd" id="1_erqyp"]
-[ext_resource type="Texture2D" uid="uid://l3dfard0n1ln" path="res://Images/Pieces/Pawn.png" id="1_xi0qi"]
+[ext_resource type="Texture2D" uid="uid://dwj4cuni1aifb" path="res://Images/Pieces/Promoted Pawn.png" id="2_m6xp2"]
+[ext_resource type="Script" path="res://Scripts/selection_highlight.gd" id="3_nd1uv"]
 
 [node name="Piece" type="Sprite2D" groups=["piece"]]
-texture = ExtResource("1_xi0qi")
+texture = ExtResource("2_m6xp2")
 script = ExtResource("1_erqyp")
+
+[node name="selection_highlight" type="Node2D" parent="."]
+z_index = -1
+script = ExtResource("3_nd1uv")
