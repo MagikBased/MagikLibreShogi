@@ -60,7 +60,6 @@ func _ready():
 	set_process_input(true)
 	#await(get_tree().create_timer(0).timeout)
 	update_pieces()
-	
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn and pieceCount > 0) and event.button_index == MOUSE_BUTTON_LEFT and boardSprite.isPromoting == false:
@@ -93,6 +92,7 @@ func get_valid_moves():
 	pawns = []
 	pawnsIndex = []
 	pawnsRemovalIndex = []
+	valid_moves = []
 	for  x in range(1,boardSprite.boardSize.x + 1):
 		for y in range(1,boardSprite.boardSize.y + 1):
 			var pos = Vector2(x,y)
@@ -113,6 +113,7 @@ func get_valid_moves():
 	if pieceType == PieceType.Knight and pieceOwner == Player.Sente:
 		for i in valid_moves:
 			if i[1] <= 2:
+				#print(valid_moves.find(i))
 				valid_moves.remove_at(valid_moves.find(i))
 	
 	if (pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and pieceOwner == Player.Gote:
@@ -156,12 +157,12 @@ func drop_piece(file,rank):
 	destroy_all_highlights()
 	if pieceOwner == Player.Sente:
 		boardSprite.inHandSente.update_in_hand(pieceType,-1)
-		boardSprite.emit_signal("turnEnd")
+		boardSprite.call_deferred("emit_signal","turnEnd")
 		#boardSprite.playerTurn = Player.Gote
 		queue_redraw()
 	elif pieceOwner == Player.Gote:
 		boardSprite.inHandGote.update_in_hand(pieceType,-1)
-		boardSprite.emit_signal("turnEnd")
+		boardSprite.call_deferred("emit_signal","turnEnd")
 		#boardSprite.playerTurn = Player.Sente
 		queue_redraw()
 

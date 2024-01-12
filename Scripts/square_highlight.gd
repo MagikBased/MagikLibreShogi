@@ -10,7 +10,9 @@ func _ready():
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed() and get_rect().has_point(to_local(event.position)):
+		print("inputevent",self)
 		if get_parent().has_method("move_piece"):
 			get_parent().move_piece(currentPosition.x,currentPosition.y)
 		if get_parent().has_method("drop_piece"):
+			print("PieceDrop")
 			get_parent().drop_piece(currentPosition.x,currentPosition.y)
