@@ -11,3 +11,5 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_8k1a7")
 centered = false
 script = ExtResource("2_0eo4k")
+
+[node name="Pieces" type="Node" parent="."]

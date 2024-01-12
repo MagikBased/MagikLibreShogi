@@ -63,7 +63,7 @@ func _ready():
 	
 
 func _input(event):
-	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn and pieceCount > 0) and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn and pieceCount > 0) and event.button_index == MOUSE_BUTTON_LEFT and boardSprite.isPromoting == false:
 		if spriteNode.get_rect().has_point(to_local(event.position)):
 			selected = !selected
 			if !selected:
@@ -131,7 +131,7 @@ func get_valid_moves():
 		for i in valid_moves:
 			if i[1] >= 8:
 				valid_moves.remove_at(valid_moves.find(i))
-				
+
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
 		for i in boardSprite.pieceData:
