@@ -111,10 +111,11 @@ func get_valid_moves():
 		for each in pawnsRemovalIndex:
 			valid_moves.erase(each)
 	if pieceType == PieceType.Knight and pieceOwner == Player.Sente:
+		var new_valid_moves = []
 		for i in valid_moves:
-			if i[1] <= 2:
-				#print(valid_moves.find(i))
-				valid_moves.remove_at(valid_moves.find(i))
+			if i.y > 2:
+				new_valid_moves.append(i)
+		valid_moves = new_valid_moves
 	
 	if (pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and pieceOwner == Player.Gote:
 		for i in valid_moves:
@@ -129,9 +130,11 @@ func get_valid_moves():
 		for each in pawnsRemovalIndex:
 			valid_moves.erase(each)
 	if pieceType == PieceType.Knight and pieceOwner == Player.Gote:
+		var new_valid_moves = []
 		for i in valid_moves:
-			if i[1] >= 8:
-				valid_moves.remove_at(valid_moves.find(i))
+			if i.y < 8:
+				new_valid_moves.append(i)
+		valid_moves = new_valid_moves
 
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
