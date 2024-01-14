@@ -184,6 +184,7 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 		for moves in possibleMoves:
 			if check_move_legality(moves, null, ignoreKing, getDefendedSquares):
 				valid_moves.append(moves)
+		#print(valid_moves)
 	if pieceType == PieceType.Knight or pieceType == PieceType.PromotedKnight:
 		if !promoted:
 			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction * 2))
@@ -343,21 +344,30 @@ func can_capture(move):
 func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file, ignoreKing = false, getDefendedSquares = false):
 	var target_rank = start_rank + delta_rank
 	var target_file = start_file + delta_file
-	while check_move_legality(Vector2(target_rank,target_file), null, ignoreKing):
+	var first_ally_seen = false
+	while check_move_legality(Vector2(target_rank,target_file), null, ignoreKing, getDefendedSquares):
+		if first_ally_seen == false and is_space_an_ally(Vector2(target_rank,target_file)) and getDefendedSquares:
+			first_ally_seen = true
+			getDefendedSquares = false
+			ignoreKing = false
+			valid_move.append(Vector2(target_rank,target_file))
+			break
+			
+		print("legal move: ",check_move_legality(Vector2(target_rank,target_file), null, ignoreKing, getDefendedSquares)," currentsquare: ",Vector2(target_rank,target_file)," Get Defended Squares: ",getDefendedSquares)
 		valid_move.append(Vector2(target_rank,target_file))
 		if can_capture(Vector2 (target_rank,target_file)):
 			break
 		target_rank += delta_rank
 		target_file += delta_file
-func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_file):
-	var target_rank = start_rank + delta_rank
-	var target_file = start_file + delta_file
-	while check_move_legality(Vector2(target_rank,target_file)):
-		valid_move.append(Vector2(target_rank,target_file))
-		if can_capture(Vector2 (target_rank,target_file)):
-			break
-		target_rank += delta_rank
-		target_file += delta_file
+#func check_diagonal_moves(valid_move, start_rank, start_file, delta_rank, delta_file):
+	#var target_rank = start_rank + delta_rank
+	#var target_file = start_file + delta_file
+	#while check_move_legality(Vector2(target_rank,target_file)):
+		#valid_move.append(Vector2(target_rank,target_file))
+		#if can_capture(Vector2 (target_rank,target_file)):
+			#break
+		#target_rank += delta_rank
+		#target_file += delta_file
 
 func destroy_all_highlights():
 	for child in get_children():
