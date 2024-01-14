@@ -23,7 +23,7 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k8/4r4/2g6/3nn4/4K4/9/9/9/9 b 2R2N2r2n 1"
+var startingBoard = "k8/4r4/2g6/3nn4/4K4/9/9/9/9 b 2R2N2rn 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -81,6 +81,8 @@ func _ready():
 
 func _on_turn_started():
 	#print("on turn start")
+	#call_deferred("get_all_moves_for_player",Player.Sente,null,null,false,false)
+	#call_deferred("get_all_moves_for_player",Player.Gote,null,null,false,false)
 	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
 	
@@ -155,7 +157,7 @@ func create_piece(piece_name,piece_owner,starting_position, promoted = false):
 	if promoted:
 		piece.promoted = true
 
-func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveDestination = null, ignoreKing = false, getDefendedSquares = false):
+func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveDestination = null, ignoreKing = false, includeDefendedSquares = false):
 	var isSimulatedMove = simulatedMoveOrigin != null and simulatedMoveDestination != null
 	var simulatedPiecesOnBoard = piecesOnBoard if isSimulatedMove else []
 	var simulatedPieceData = pieceData if isSimulatedMove else []
@@ -180,7 +182,7 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 				gamePieces.append(piece)
 				for j in gamePieces:
 					if !isSimulatedMove:
-						instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition,null,ignoreKing, getDefendedSquares)
+						instance_from_id(j[2]).get_valid_moves(instance_from_id(j[2]).currentPosition,null,ignoreKing, includeDefendedSquares)
 						for i in instance_from_id(j[2]).valid_moves:
 							if !(i in allMoves):
 								allMoves.append(i)
@@ -199,7 +201,7 @@ func get_all_moves_for_player(player, simulatedMoveOrigin = null, simulatedMoveD
 			if piece[1] == Player.Gote:
 				gamePieces.append(piece)
 				for k in gamePieces:
-					instance_from_id(k[2]).get_valid_moves(instance_from_id(k[2]).currentPosition, null, ignoreKing, getDefendedSquares)
+					instance_from_id(k[2]).get_valid_moves(instance_from_id(k[2]).currentPosition, null, ignoreKing, includeDefendedSquares)
 					for i in instance_from_id(k[2]).valid_moves:
 						if !(i in allMoves):
 							allMoves.append(i)

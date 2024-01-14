@@ -173,7 +173,7 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 				valid_moves.append(moves)
 	if pieceType == PieceType.Lance or pieceType == PieceType.PromotedLance:
 		if !promoted:
-			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction, ignoreKing)
+			check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction, ignoreKing, getDefendedSquares)
 		elif promoted:
 			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -223,10 +223,10 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 			if check_move_legality(moves, null, ignoreKing, getDefendedSquares):
 				valid_moves.append(moves)
 	if pieceType == PieceType.Bishop or pieceType == PieceType.PromotedBishop:
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction,ignoreKing)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,move_direction,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,move_direction,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,-move_direction,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,-move_direction,ignoreKing, getDefendedSquares)
 			
 		if promoted:
 			possibleMoves.append(Vector2(coordinate.x,coordinate.y + move_direction))
@@ -237,10 +237,10 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 				if check_move_legality(moves, null, ignoreKing, getDefendedSquares):
 					valid_moves.append(moves)
 	if pieceType == PieceType.Rook or pieceType == PieceType.PromotedRook:
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction,ignoreKing)
-		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0,ignoreKing)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,-move_direction,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,move_direction,0,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,0,move_direction,ignoreKing, getDefendedSquares)
+		check_horizontal_moves(valid_moves,coordinate.x,coordinate.y,-move_direction,0,ignoreKing, getDefendedSquares)
 		if promoted:
 			possibleMoves.append(Vector2(coordinate.x - move_direction,coordinate.y + move_direction))
 			possibleMoves.append(Vector2(coordinate.x + move_direction,coordinate.y + move_direction))
@@ -268,7 +268,7 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 			var adjacentSquare = opponentKingPosition[0] + direction
 			if is_inside_board(adjacentSquare) and !(adjacentSquare in attacking_spaces_from_opponent):
 				attacking_spaces_from_opponent.append(adjacentSquare)
-		print("attacking spaces: ",attacking_spaces_from_opponent)
+		#print("attacking spaces: ",attacking_spaces_from_opponent)
 		var safe_moves = []
 		for move in valid_moves:
 			if not move in attacking_spaces_from_opponent:
@@ -292,7 +292,9 @@ func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false, g
 	if can_capture(move):
 		return true
 
-	if is_space_taken(move, simulatedMoveOrigin, ignoreKing, getDefendedSquares):
+	if is_space_taken(move, simulatedMoveOrigin, ignoreKing):
+		if getDefendedSquares and is_space_an_ally(move):
+			return true
 		return false
 
 	return true
@@ -300,7 +302,7 @@ func check_move_legality(move, simulatedMoveOrigin = null, ignoreKing = false, g
 func is_inside_board(move):
 	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
 
-func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false, getDefendedSquares = false):
+func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false):
 	if simulatedMoveOrigin != null:
 		var simulatedPiecesOnBoard = boardSprite.piecesOnBoard
 		var simulatedMoveIndex = simulatedPiecesOnBoard.find(simulatedMoveOrigin)
@@ -309,14 +311,7 @@ func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false, getDef
 		return move in simulatedPiecesOnBoard
 	else:
 		if !ignoreKing:
-			if !getDefendedSquares:
-				if move in boardSprite.piecesOnBoard:
-					var pieceIndex = boardSprite.piecesOnBoard.find(move)
-					var pieceID = boardSprite.pieceData[pieceIndex]
-					if pieceID[1] == pieceOwner:
-						return false
-			else:
-				return move in boardSprite.piecesOnBoard
+			return move in boardSprite.piecesOnBoard
 		else:
 			if move in boardSprite.piecesOnBoard:
 				var pieceIndex = boardSprite.piecesOnBoard.find(move)
@@ -326,6 +321,14 @@ func is_space_taken(move, simulatedMoveOrigin = null, ignoreKing = false, getDef
 					return false
 			else:
 				return false
+
+func is_space_an_ally(move):
+	if move in boardSprite.piecesOnBoard:
+		var pieceIndex = boardSprite.piecesOnBoard.find(move)
+		var pieceID = boardSprite.pieceData[pieceIndex]
+		if pieceID[1] == pieceOwner:
+			return true
+	return false
 
 func can_capture(move):
 	if is_space_taken(move,null,true):
@@ -337,7 +340,7 @@ func can_capture(move):
 				return true
 	return false
 
-func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file, ignoreKing = false):
+func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delta_file, ignoreKing = false, getDefendedSquares = false):
 	var target_rank = start_rank + delta_rank
 	var target_file = start_file + delta_file
 	while check_move_legality(Vector2(target_rank,target_file), null, ignoreKing):
