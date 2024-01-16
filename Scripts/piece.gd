@@ -352,8 +352,7 @@ func check_horizontal_moves(valid_move, start_rank, start_file, delta_rank, delt
 			ignoreKing = false
 			valid_move.append(Vector2(target_rank,target_file))
 			break
-			
-		print("legal move: ",check_move_legality(Vector2(target_rank,target_file), null, ignoreKing, getDefendedSquares)," currentsquare: ",Vector2(target_rank,target_file)," Get Defended Squares: ",getDefendedSquares)
+		#print("legal move: ",check_move_legality(Vector2(target_rank,target_file), null, ignoreKing, getDefendedSquares)," currentsquare: ",Vector2(target_rank,target_file)," Get Defended Squares: ",getDefendedSquares)
 		valid_move.append(Vector2(target_rank,target_file))
 		if can_capture(Vector2 (target_rank,target_file)):
 			break
@@ -375,6 +374,7 @@ func destroy_all_highlights():
 			child.queue_free()
 
 func move_piece(file,rank):
+	var origin = currentPosition
 	var destination = Vector2(file,rank)
 	if can_capture(destination):
 		capture_piece(file,rank)
@@ -393,15 +393,16 @@ func move_piece(file,rank):
 	elif pieceOwner == Player.Gote:
 		boardSprite.gotePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
 	snap_to_grid()
-	if can_promote(rank):
-		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 1) or (pieceType == PieceType.Knight and rank <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and rank == 9) or (pieceType == PieceType.Knight and rank >= 8))):
+	#print(Vector2(origin.y,destination.y))
+	#print(can_promote(origin.y,destination.y))
+	if can_promote(origin.y,destination.y):
+		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 1) or (pieceType == PieceType.Knight and destination.y <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 9) or (pieceType == PieceType.Knight and destination.y >= 8))):
 			promoted = true
 			set_piece_type()
 			boardSprite.emit_signal("turnEnd")
 		else:
 			boardSprite.isPromoting = true
 			var promotionPrompt = promotionWindow.instantiate()
-			#await(get_tree().create_timer(1).timeout)
 			add_child(promotionPrompt)
 			promotionPrompt.position.y += rectSize.y / 2
 	else:
@@ -468,13 +469,17 @@ func add_piece_to_hand(piece_data):
 		if piece_data[0] == PieceType.Rook or piece_data[0] == PieceType.PromotedRook:
 			boardSprite.inHandGote.update_in_hand(PieceType.Rook,1)
 
-func can_promote(rank):
-	if promoted == true:
+func can_promote(start_rank: int ,end_rank: int):
+	if promoted:
 		return false
-	if pieceType == PieceType.Pawn or pieceType == PieceType.Lance or pieceType == PieceType.Knight or pieceType == PieceType.Silver or pieceType == PieceType.Bishop or pieceType == PieceType.Rook:
-		if pieceOwner == Player.Sente and rank <= 3:
+	var promotion_zone_sente = [int(1), int(2), int(3)]
+	var promotion_zone_gote = [int(7), int(8), int(9)]
+
+	if pieceType in [PieceType.Pawn, PieceType.Lance, PieceType.Knight, PieceType.Silver, PieceType.Bishop, PieceType.Rook]:
+		print(end_rank in promotion_zone_sente)
+		if pieceOwner == Player.Sente and (start_rank in promotion_zone_sente or end_rank in promotion_zone_sente):
 			return true
-		elif pieceOwner == Player.Gote and rank >= 7:
+		elif pieceOwner == Player.Gote and (start_rank in promotion_zone_gote or end_rank in promotion_zone_gote):
 			return true
 	return false
 
@@ -533,7 +538,7 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 				if boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
 					threats.append(currentSpace)
 					threatenedSpaces = spacesChecked
-					print("spaces checked ",spacesChecked)
+					#print("spaces checked ",spacesChecked)
 					break
 		currentSpace += direction
 	if alliedPiecesInPath.size() == 1:
