@@ -23,7 +23,7 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k3l4/9/4nb3/9/9/4G4/3K5/9/9 b 2R2N2rn 1"
+var startingBoard = "k8/7b1/9/5G3/4K4/9/9/9/9 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -85,6 +85,8 @@ func _on_turn_started():
 	#call_deferred("get_all_moves_for_player",Player.Gote,null,null,false,false)
 	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
+	var current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
+	current_player_king.call_deferred("check_attack_vectors",find_king(playerTurn)[0],playerTurn)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente
