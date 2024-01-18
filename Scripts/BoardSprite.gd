@@ -23,7 +23,8 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k8/7b1/9/5G3/4K4/9/9/9/9 b - 1"
+var startingBoard = "k3l4/9/9/9/9/9/4K4/9/9 b - 1"
+#var startingBoard = "bk2r3b/9/3n1n3/9/r3K3r/9/9/9/b3r3b b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -71,18 +72,11 @@ func _ready():
 	board_setup()
 	turnStart.connect(_on_turn_started)
 	turnEnd.connect(_on_turn_ended)
-	#await(get_tree().create_timer(.001).timeout)
 	call_deferred("emit_signal","turnStart")
-	#emit_signal("turnStart")
-	#get_all_moves_for_player(Player.Sente,Vector2(1,7),Vector2(1,6))
-	#get_all_moves_for_player(Player.Sente)
 	#print(pieceData)
 	#print(piecesOnBoard)
 
 func _on_turn_started():
-	#print("on turn start")
-	#call_deferred("get_all_moves_for_player",Player.Sente,null,null,false,false)
-	#call_deferred("get_all_moves_for_player",Player.Gote,null,null,false,false)
 	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
 	var current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
@@ -93,11 +87,9 @@ func _on_turn_ended():
 	var king_pos = find_king(playerTurn)[0]
 	var king_instance = instance_from_id(pieceData[piecesOnBoard.find(king_pos)][2])
 	king_instance.check_attack_vectors(king_pos,playerTurn)
-	#await(get_tree().create_timer(.001).timeout)
 	for piece in get_tree().get_nodes_in_group("piece"):
 		piece.constrained_moves.clear()
 	call_deferred("emit_signal","turnStart")
-	#emit_signal("turnStart")
 
 func find_square_center(file: int,rank: int) -> Vector2:
 	var centerX = (10 - file) * squareSize - squareSize / 2
@@ -249,7 +241,7 @@ func find_king(player):
 			kingPos.append(instance_from_id(kingIndex).currentPosition)
 	return kingPos
 
-func is_in_check(player):  #currently messes with king legal moves, needs rework.
+func is_in_check(player):  
 	var kingPosition = []
 	if player == Player.Sente:
 		get_all_moves_for_player(Player.Gote)
@@ -260,7 +252,7 @@ func is_in_check(player):  #currently messes with king legal moves, needs rework
 			senteInCheck = true
 		else:
 			senteInCheck = false
-		#print("Is in check? " + str(senteInCheck))
+		print("Is in check? " + str(senteInCheck))
 	
 	if player == Player.Gote:
 		get_all_moves_for_player(Player.Sente)
@@ -275,7 +267,6 @@ func is_in_check(player):  #currently messes with king legal moves, needs rework
 
 func clear_board():
 	for piece in get_parent().get_children():
-		#print(piece_scene.get_class())
 		if piece.is_in_group("piece"):
 			piece.queue_free()
 	piecesOnBoard = []

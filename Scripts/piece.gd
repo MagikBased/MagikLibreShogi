@@ -41,6 +41,16 @@ var selectionColor = Color(0,1,0,0.5)
 
 var valid_moves = []
 var constrained_moves = []
+var threats = []
+var vertical_north = []
+var diagonal_northeast = []
+var horizontal_east = []
+var diagonal_southeast = []
+var vertical_south = []
+var diagonal_southwest = []
+var horizontal_west = []
+var diagonal_northwest = []
+
 var adjacentSquares = [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1),Vector2(-1,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1)]
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 var promotionWindow = load("res://Scenes/promotion_window.tscn")
@@ -57,8 +67,6 @@ func _ready():
 		sente_material.shader = sente_shader
 		material = sente_material
 	set_process_input(true)
-	if pieceType == PieceType.King and pieceOwner == Player.Sente:
-		check_attack_vectors(currentPosition,pieceOwner)
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and (pieceOwner == boardSprite.playerTurn) and event.button_index == MOUSE_BUTTON_LEFT and boardSprite.isPromoting == false:
@@ -92,12 +100,7 @@ func _draw():
 		$selection_highlight.visible = true
 	else:
 		$selection_highlight.visible = false
-		#draw_rect(Rect2(Vector2(0,0) - rectSize/2,rectSize),selectionColor,true)
-	#var sente_shade = Color(0.8,0.8,0.8)
-	#if pieceOwner == Player.Gote:
 	draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),modulate)
-	#else:
-		#draw_texture(texture,Vector2(float(-texture.get_width())/2,float(-texture.get_height())/2),sente_shade)
 
 func snap_to_grid():
 	var posNotation:Vector2 = boardSprite.find_square_center(currentPosition.x,currentPosition.y)
@@ -393,8 +396,6 @@ func move_piece(file,rank):
 	elif pieceOwner == Player.Gote:
 		boardSprite.gotePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
 	snap_to_grid()
-	#print(Vector2(origin.y,destination.y))
-	#print(can_promote(origin.y,destination.y))
 	if can_promote(origin.y,destination.y):
 		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 1) or (pieceType == PieceType.Knight and destination.y <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 9) or (pieceType == PieceType.Knight and destination.y >= 8))):
 			promoted = true
@@ -476,7 +477,6 @@ func can_promote(start_rank: int ,end_rank: int):
 	var promotion_zone_gote = [int(7), int(8), int(9)]
 
 	if pieceType in [PieceType.Pawn, PieceType.Lance, PieceType.Knight, PieceType.Silver, PieceType.Bishop, PieceType.Rook]:
-		print(end_rank in promotion_zone_sente)
 		if pieceOwner == Player.Sente and (start_rank in promotion_zone_sente or end_rank in promotion_zone_sente):
 			return true
 		elif pieceOwner == Player.Gote and (start_rank in promotion_zone_gote or end_rank in promotion_zone_gote):
@@ -494,8 +494,8 @@ func king_under_attack_vector(player):
 	attack_vectors["horizontal"] = check_attack_vectors(king_position, player)
 
 func check_attack_vectors(king_position, player):
-	var threats = []
 	var move_direction
+	threats = []
 	if player == Player.Sente:
 		move_direction = -1
 	else:
@@ -512,7 +512,8 @@ func check_attack_vectors(king_position, player):
 	return threats
 	
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
-	var threats = []
+	var king_threats = []
+	var threat_path = []
 	var alliedPiecesInPath = []
 	var currentSpace = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
@@ -536,7 +537,7 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 					alliedPieceIndex = null
 			elif boardSprite.pieceData[pieceIndex][1] == opponent:
 				if boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
-					threats.append(currentSpace)
+					king_threats.append(currentSpace)
 					threatenedSpaces = spacesChecked
 					#print("spaces checked ",spacesChecked)
 					break
@@ -545,5 +546,22 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 		if alliedPiece != null:
 			for space in threatenedSpaces:
 				alliedPiece.constrained_moves.append(space)
-	#print("Threats: " + str(threats),self)
-	return threats
+	if direction == Vector2(0, -1) and king_threats != []:
+		vertical_north = spacesChecked
+	if direction == Vector2(1, -1) and king_threats != []:
+		diagonal_northeast = spacesChecked
+	if direction == Vector2(1, 0) and king_threats != []:
+		horizontal_east = spacesChecked
+	if direction == Vector2(1, 1) and king_threats != []:
+		diagonal_southeast = spacesChecked
+	if direction == Vector2(0, 1) and king_threats != []:
+		vertical_south = spacesChecked
+	if direction == Vector2(-1, 1) and king_threats != []:
+		diagonal_southwest = spacesChecked
+	if direction == Vector2(-1, 0) and king_threats != []:
+		horizontal_west = spacesChecked
+	if direction == Vector2(-1, -1) and king_threats != []:
+		diagonal_northwest = spacesChecked
+	if king_threats != []:
+		print("Threats: " + str(king_threats))
+	return king_threats
