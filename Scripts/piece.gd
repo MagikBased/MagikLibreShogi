@@ -509,6 +509,8 @@ func check_attack_vectors(king_position, player):
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	#print("Threats: " + str(threats),self)
+	boardSprite.current_player_king_threats.append(threats)
+	print(boardSprite.current_player_king_threats)
 	return threats
 	
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
@@ -562,6 +564,9 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 		horizontal_west = spacesChecked
 	if direction == Vector2(-1, -1) and king_threats != []:
 		diagonal_northwest = spacesChecked
-	if king_threats != []:
-		print("Threats: " + str(king_threats))
+	#if king_threats != []:
+		#print("Threats: " + str(king_threats))
 	return king_threats
+
+func deferred_print(value):
+	print(value)

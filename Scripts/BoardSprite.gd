@@ -53,6 +53,7 @@ var allMovesGote = []
 var allMovesSenteIgnoreKing = []
 var allMovesGoteIgnoreKing = []
 var allMovesAfterCapture = []
+var current_player_king_threats = []
 var senteInCheck = false
 var goteInCheck = false
 var isPromoting = false
@@ -81,6 +82,12 @@ func _on_turn_started():
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
 	var current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
 	current_player_king.call_deferred("check_attack_vectors",find_king(playerTurn)[0],playerTurn)
+	#if current_player_king.threats != []:
+	#current_player_king.call_deferred("deferred_print",current_player_king.threats)
+	#print(current_player_king_threats)
+	
+func deferred_print(value):
+	print(value)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente

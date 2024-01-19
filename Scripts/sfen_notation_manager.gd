@@ -130,13 +130,15 @@ func get_sfen_notation():
 	else:
 		sfen += senteHand
 		sfen += goteHand
-
+	sfen += " " + str(board.turnCount)
 	return sfen
 
 func create_board_from_sfen(sfen: String):
 	var parts = sfen.split(" ")
 	var board_state = parts[0]
+	var player_turn = parts[1]
 	var in_hand_pieces = parts[2]
+	var turn_count = parts[3]
 	
 	regex.compile("([1-9]|\\+[plnsgkbrPLNSGKBR]|[plnsgkbrPLNSGKBR])")
 	var matches = regex.search_all(board_state)
@@ -184,6 +186,14 @@ func create_board_from_sfen(sfen: String):
 			
 		else:
 			board.inHandGote.call_deferred("update_in_hand",piece_type,count)
+	
+	if player_turn == "b":
+		board.playerTurn = Player.Sente
+	elif player_turn =="w":
+		board.playerTurn = Player.Gote
+	
+	board.turnCount = int(turn_count)
+	
 
 func get_hand_notation(count, piece_char):
 	if count > 0:
