@@ -23,7 +23,7 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k3l4/9/9/9/9/9/4K4/9/9 b - 1"
+var startingBoard = "8k/R6b1/9/6P2/9/9/R8/9/KG1NL4 b - 1"
 #var startingBoard = "bk2r3b/9/3n1n3/9/r3K3r/9/9/9/b3r3b b - 1"
 
 @export var boardSize = Vector2(9, 9)
@@ -53,6 +53,7 @@ var allMovesGote = []
 var allMovesSenteIgnoreKing = []
 var allMovesGoteIgnoreKing = []
 var allMovesAfterCapture = []
+var current_player_king
 var current_player_king_threats = []
 var senteInCheck = false
 var goteInCheck = false
@@ -74,17 +75,19 @@ func _ready():
 	turnStart.connect(_on_turn_started)
 	turnEnd.connect(_on_turn_ended)
 	call_deferred("emit_signal","turnStart")
+	#await(get_tree().create_timer(0.01).timeout)
 	#print(pieceData)
 	#print(piecesOnBoard)
+	#print(current_player_king_threats)
+	#call_deferred("deferred_print",current_player_king_threats)
 
 func _on_turn_started():
 	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
-	var current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
-	current_player_king.call_deferred("check_attack_vectors",find_king(playerTurn)[0],playerTurn)
-	#if current_player_king.threats != []:
-	#current_player_king.call_deferred("deferred_print",current_player_king.threats)
-	#print(current_player_king_threats)
+	current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
+	current_player_king.confirmed_attack_vectors.clear()
+	current_player_king.check_attack_vectors(current_player_king.currentPosition,playerTurn)
+	#print(current_player_king.confirmed_attack_vectors)
 	
 func deferred_print(value):
 	print(value)

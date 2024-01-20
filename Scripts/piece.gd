@@ -42,6 +42,7 @@ var selectionColor = Color(0,1,0,0.5)
 var valid_moves = []
 var constrained_moves = []
 var threats = []
+
 var vertical_north = []
 var diagonal_northeast = []
 var horizontal_east = []
@@ -50,6 +51,8 @@ var vertical_south = []
 var diagonal_southwest = []
 var horizontal_west = []
 var diagonal_northwest = []
+var confirmed_attack_vectors = []
+
 
 var adjacentSquares = [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1),Vector2(-1,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1)]
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
@@ -279,12 +282,20 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 				safe_moves.append(move)
 		valid_moves = safe_moves
 		
-		
 	if !constrained_moves.is_empty():
 		var valid_and_constrained_moves_intersection = []
 		for move in valid_moves:
 			if move in constrained_moves:
 				valid_and_constrained_moves_intersection.append(move)
+		valid_moves = valid_and_constrained_moves_intersection
+	
+	if pieceType != PieceType.King and boardSprite.current_player_king.confirmed_attack_vectors != []:
+		var valid_and_constrained_moves_intersection = []
+		#print(boardSprite.current_player_king.confirmed_attack_vectors)
+		for move in valid_moves:
+			for sub_array in boardSprite.current_player_king.confirmed_attack_vectors:
+				if move in sub_array:
+					valid_and_constrained_moves_intersection.append(move)
 		valid_moves = valid_and_constrained_moves_intersection
 	
 	if isSimulatedMove:
@@ -509,13 +520,32 @@ func check_attack_vectors(king_position, player):
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	#print("Threats: " + str(threats),self)
-	boardSprite.current_player_king_threats.append(threats)
-	print(boardSprite.current_player_king_threats)
+	#boardSprite.current_player_king_threats.append(threats)
+	#print(boardSprite.current_player_king_threats)
+	#for attack_vector in all_king_attack_vectors.keys():
+	#	if all_king_attack_vectors[attack_vector].size() > 0:
+	if vertical_north.size()  > 0:
+		confirmed_attack_vectors.append(vertical_north)
+	if diagonal_northeast.size() > 0:
+		confirmed_attack_vectors.append(diagonal_northeast)
+	if horizontal_east.size() > 0:
+		confirmed_attack_vectors.append(horizontal_east)
+	if diagonal_southeast.size() > 0:
+		confirmed_attack_vectors.append(diagonal_southeast)
+	if vertical_south.size() > 0:
+		confirmed_attack_vectors.append(vertical_south)
+	if diagonal_southeast.size() > 0:
+		confirmed_attack_vectors.append(diagonal_southeast)
+	if horizontal_west.size() > 0:
+		confirmed_attack_vectors.append(horizontal_west)
+	if diagonal_northwest.size() > 0:
+		confirmed_attack_vectors.append(diagonal_northwest)
+		#confirmed_attack_vectors.append(attack_vector)
+	
 	return threats
 	
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
 	var king_threats = []
-	var threat_path = []
 	var alliedPiecesInPath = []
 	var currentSpace = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
