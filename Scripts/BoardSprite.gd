@@ -23,8 +23,8 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "8k/R6b1/9/6P2/9/9/R8/9/KG1NL4 b - 1"
-#var startingBoard = "bk2r3b/9/3n1n3/9/r3K3r/9/9/9/b3r3b b - 1"
+#var startingBoard = "bk6b/9/9/9/4K4/9/2R3R2/9/9 b - 1"
+var startingBoard = "1k6b/9/9/9/9/9/9/9/KRR6 b - 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -82,12 +82,11 @@ func _ready():
 	#call_deferred("deferred_print",current_player_king_threats)
 
 func _on_turn_started():
-	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
-	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
 	current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
 	current_player_king.confirmed_attack_vectors.clear()
 	current_player_king.check_attack_vectors(current_player_king.currentPosition,playerTurn)
-	#print(current_player_king.confirmed_attack_vectors)
+	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
+	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
 	
 func deferred_print(value):
 	print(value)
@@ -262,7 +261,7 @@ func is_in_check(player):
 			senteInCheck = true
 		else:
 			senteInCheck = false
-		print("Is in check? " + str(senteInCheck))
+		#print("Is in check? " + str(senteInCheck))
 	
 	if player == Player.Gote:
 		get_all_moves_for_player(Player.Sente)

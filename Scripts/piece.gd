@@ -289,13 +289,16 @@ func get_valid_moves(coordinate, simulatedMoveOrigin = null, ignoreKing = false,
 				valid_and_constrained_moves_intersection.append(move)
 		valid_moves = valid_and_constrained_moves_intersection
 	
-	if pieceType != PieceType.King and boardSprite.current_player_king.confirmed_attack_vectors != []:
+	if pieceType != PieceType.King and boardSprite.current_player_king.confirmed_attack_vectors != [] and pieceOwner == boardSprite.playerTurn:
 		var valid_and_constrained_moves_intersection = []
-		#print(boardSprite.current_player_king.confirmed_attack_vectors)
 		for move in valid_moves:
+			var move_is_in_each_vector = true
 			for sub_array in boardSprite.current_player_king.confirmed_attack_vectors:
-				if move in sub_array:
-					valid_and_constrained_moves_intersection.append(move)
+				if move not in sub_array:
+					move_is_in_each_vector = false
+					break
+			if move_is_in_each_vector:
+				valid_and_constrained_moves_intersection.append(move)
 		valid_moves = valid_and_constrained_moves_intersection
 	
 	if isSimulatedMove:
@@ -522,7 +525,6 @@ func check_attack_vectors(king_position, player):
 	#print("Threats: " + str(threats),self)
 	#boardSprite.current_player_king_threats.append(threats)
 	#print(boardSprite.current_player_king_threats)
-	#for attack_vector in all_king_attack_vectors.keys():
 	#	if all_king_attack_vectors[attack_vector].size() > 0:
 	if vertical_north.size()  > 0:
 		confirmed_attack_vectors.append(vertical_north)
@@ -541,7 +543,7 @@ func check_attack_vectors(king_position, player):
 	if diagonal_northwest.size() > 0:
 		confirmed_attack_vectors.append(diagonal_northwest)
 		#confirmed_attack_vectors.append(attack_vector)
-	
+	#print(confirmed_attack_vectors)
 	return threats
 	
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
@@ -595,7 +597,7 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 	if direction == Vector2(-1, -1) and king_threats != []:
 		diagonal_northwest = spacesChecked
 	#if king_threats != []:
-		#print("Threats: " + str(king_threats))
+	#print("Threats: " + str(king_threats))
 	return king_threats
 
 func deferred_print(value):
