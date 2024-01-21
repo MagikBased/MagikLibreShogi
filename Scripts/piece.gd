@@ -43,6 +43,7 @@ var valid_moves = []
 var constrained_moves = []
 var threats = []
 
+var confirmed_attack_vectors = []
 var vertical_north = []
 var diagonal_northeast = []
 var horizontal_east = []
@@ -51,8 +52,16 @@ var vertical_south = []
 var diagonal_southwest = []
 var horizontal_west = []
 var diagonal_northwest = []
-var confirmed_attack_vectors = []
-
+var north = []
+var northeast = []
+var east = []
+var southeast = []
+var south = []
+var southwest = []
+var west = []
+var northwest = []
+var knighteast = []
+var knightwest = []
 
 var adjacentSquares = [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1),Vector2(-1,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1)]
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
@@ -522,6 +531,49 @@ func check_attack_vectors(king_position, player):
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(-move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
 	threats += check_swinging_attack_vectors_directions_and_piece(king_position, Vector2(move_direction,-move_direction),player, [PieceType.Bishop, PieceType.PromotedBishop])
+	
+	var has_attack_vector
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(0,move_direction),player,[PieceType.Pawn, PieceType.Silver, PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(move_direction,move_direction),player,[PieceType.Silver, PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(move_direction,0),player,[PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(move_direction,-move_direction),player,[PieceType.Silver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(0,-move_direction),player,[PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(-move_direction,-move_direction),player,[PieceType.Silver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(-move_direction,0),player,[PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(-move_direction,move_direction),player,[PieceType.Silver, PieceType.Gold, PieceType.PromotedPawn, PieceType.PromotedLance, PieceType.PromotedKnight, PieceType.PromotedSilver])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+		
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(move_direction,move_direction*2),player,[PieceType.Knight])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+		
+	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(-move_direction,move_direction*2),player,[PieceType.Knight])
+	if has_attack_vector != []:
+		threats.append(has_attack_vector)
+	
+	
 	#print("Threats: " + str(threats),self)
 	#boardSprite.current_player_king_threats.append(threats)
 	#print(boardSprite.current_player_king_threats)
@@ -542,10 +594,71 @@ func check_attack_vectors(king_position, player):
 		confirmed_attack_vectors.append(horizontal_west)
 	if diagonal_northwest.size() > 0:
 		confirmed_attack_vectors.append(diagonal_northwest)
+	if north != []:
+		confirmed_attack_vectors.append(north)
+	if northeast != []:
+		confirmed_attack_vectors.append(northeast)
+	if east != []:
+		confirmed_attack_vectors.append(east)
+	if southeast != []:
+		confirmed_attack_vectors.append(southeast)
+	if south != []:
+		confirmed_attack_vectors.append(south)
+	if southwest != []:
+		confirmed_attack_vectors.append(southwest)
+	if west != []:
+		confirmed_attack_vectors.append(west)
+	if northwest != []:
+		confirmed_attack_vectors.append(northwest)
+	if knighteast != []:
+		confirmed_attack_vectors.append(knighteast)
+	if knightwest != []:
+		confirmed_attack_vectors.append(knightwest)
+		
 		#confirmed_attack_vectors.append(attack_vector)
-	#print(confirmed_attack_vectors)
-	return threats
+	print(confirmed_attack_vectors)
+	if threats != []:
+		return threats
 	
+func check_nonswinging_attack_vectors_directions_and_piece(start_pos, direction, player, threatening_pieces):
+	var king_threats = []
+	var opponent = Player.Gote if player == Player.Sente else Player.Sente
+	var currentSpace = start_pos + direction
+	var move_direction
+	if player == Player.Sente:
+		move_direction = -1
+	else:
+		move_direction = 1
+	
+	if !is_inside_board(currentSpace):
+		return
+	if boardSprite.piecesOnBoard.has(currentSpace):
+			var pieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
+			if boardSprite.pieceData[pieceIndex][1] == opponent and boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
+				king_threats.append(currentSpace)
+	if direction == Vector2(0,move_direction) and king_threats != []:
+		north.append(currentSpace)
+	if direction == Vector2(move_direction,move_direction)and king_threats != []:
+		northeast.append(currentSpace)
+	if direction == Vector2(move_direction,0) and king_threats != []:
+		east.append(currentSpace)
+	if direction == Vector2(move_direction,-move_direction)and king_threats != []:
+		southeast.append(currentSpace)
+	if direction == Vector2(0,-move_direction) and king_threats != []:
+		south.append(currentSpace)
+	if direction == Vector2(-move_direction,-move_direction) and king_threats != []:
+		southwest.append(currentSpace)
+	if direction == Vector2(-move_direction,0) and king_threats != []:
+		west.append(currentSpace)
+	if direction == Vector2(-move_direction,move_direction) and king_threats != []:
+		northwest.append(currentSpace)
+	if direction == Vector2(move_direction,move_direction*2) and king_threats != []:
+		knighteast.append(currentSpace)
+	if direction == Vector2(-move_direction,move_direction*2) and king_threats != []:
+		knightwest.append(currentSpace)
+	#print(currentSpace)
+	return king_threats
+
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
 	var king_threats = []
 	var alliedPiecesInPath = []
@@ -599,6 +712,27 @@ func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,pla
 	#if king_threats != []:
 	#print("Threats: " + str(king_threats))
 	return king_threats
+
+func clear_attack_vectors():
+	confirmed_attack_vectors = []
+	vertical_north = []
+	diagonal_northeast = []
+	horizontal_east = []
+	diagonal_southeast = []
+	vertical_south = []
+	diagonal_southwest = []
+	horizontal_west = []
+	diagonal_northwest = []
+	north = []
+	northeast = []
+	east = []
+	southeast = []
+	south = []
+	southwest = []
+	west = []
+	northwest = []
+	knighteast = []
+	knightwest = []
 
 func deferred_print(value):
 	print(value)
