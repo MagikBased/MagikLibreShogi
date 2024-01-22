@@ -129,24 +129,40 @@ func set_piece_type():
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Pawn.png")
 				pieceType = PieceType.PromotedPawn
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		PieceType.Lance:
 			if promoted == false:
 				sprite_texture = load("res://Images/Pieces/Lance.png")
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Lance.png")
 				pieceType = PieceType.PromotedLance
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		PieceType.Knight:
 			if promoted == false:
 				sprite_texture = load("res://Images/Pieces/Knight.png")
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Knight.png")
 				pieceType = PieceType.PromotedKnight
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		PieceType.Silver:
 			if promoted == false:
 				sprite_texture = load("res://Images/Pieces/Silver General.png")
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Silver General.png")
 				pieceType = PieceType.PromotedSilver
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		PieceType.Gold:
 			sprite_texture = load("res://Images/Pieces/Gold General.png")
 		PieceType.Bishop:
@@ -155,12 +171,20 @@ func set_piece_type():
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Bishop.png")
 				pieceType = PieceType.PromotedBishop
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		PieceType.Rook:
 			if promoted == false:
 				sprite_texture = load("res://Images/Pieces/Rook.png")
 			elif promoted == true:
 				sprite_texture = load("res://Images/Pieces/Promoted Rook.png")
 				pieceType = PieceType.PromotedRook
+				for piece in range(len(boardSprite.pieceData)):
+					if get_instance_id() == boardSprite.pieceData[piece][2]:
+						boardSprite.pieceData[piece] = [pieceType,boardSprite.pieceData[piece][1],boardSprite.pieceData[piece][2]]
+						break
 		_:
 			sprite_texture = null
 	texture = sprite_texture
@@ -572,12 +596,7 @@ func check_attack_vectors(king_position, player):
 	has_attack_vector = check_nonswinging_attack_vectors_directions_and_piece(king_position,Vector2(-move_direction,move_direction*2),player,[PieceType.Knight])
 	if has_attack_vector != []:
 		threats.append(has_attack_vector)
-	
-	
 	#print("Threats: " + str(threats),self)
-	#boardSprite.current_player_king_threats.append(threats)
-	#print(boardSprite.current_player_king_threats)
-	#	if all_king_attack_vectors[attack_vector].size() > 0:
 	if vertical_north.size()  > 0:
 		confirmed_attack_vectors.append(vertical_north)
 	if diagonal_northeast.size() > 0:
@@ -588,8 +607,8 @@ func check_attack_vectors(king_position, player):
 		confirmed_attack_vectors.append(diagonal_southeast)
 	if vertical_south.size() > 0:
 		confirmed_attack_vectors.append(vertical_south)
-	if diagonal_southeast.size() > 0:
-		confirmed_attack_vectors.append(diagonal_southeast)
+	if diagonal_southwest.size() > 0:
+		confirmed_attack_vectors.append(diagonal_southwest)
 	if horizontal_west.size() > 0:
 		confirmed_attack_vectors.append(horizontal_west)
 	if diagonal_northwest.size() > 0:
@@ -616,7 +635,7 @@ func check_attack_vectors(king_position, player):
 		confirmed_attack_vectors.append(knightwest)
 		
 		#confirmed_attack_vectors.append(attack_vector)
-	print(confirmed_attack_vectors)
+	#print(confirmed_attack_vectors)
 	if threats != []:
 		return threats
 	
@@ -631,7 +650,7 @@ func check_nonswinging_attack_vectors_directions_and_piece(start_pos, direction,
 		move_direction = 1
 	
 	if !is_inside_board(currentSpace):
-		return
+		return []
 	if boardSprite.piecesOnBoard.has(currentSpace):
 			var pieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
 			if boardSprite.pieceData[pieceIndex][1] == opponent and boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
@@ -657,6 +676,7 @@ func check_nonswinging_attack_vectors_directions_and_piece(start_pos, direction,
 	if direction == Vector2(-move_direction,move_direction*2) and king_threats != []:
 		knightwest.append(currentSpace)
 	#print(currentSpace)
+	
 	return king_threats
 
 func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
