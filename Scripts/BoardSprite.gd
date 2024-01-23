@@ -23,8 +23,8 @@ enum Player{
 
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
-var startingBoard = "k8/9/9/9/8b/6n2/9/4K4/9 w - 1"
-#var startingBoard = "k8/9/9/4P4/9/9/9/9/K8 b - 1"
+#var startingBoard = "k8/9/9/9/8b/6n2/9/4K4/9 w - 1"
+var startingBoard = "k8/4Kg3/9/9/9/9/9/7P1/9 b 2R2B2G2S2N2L2P2r2b2g2s2n2l2p 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines

@@ -135,6 +135,18 @@ func get_valid_moves():
 			if i.y < 8:
 				new_valid_moves.append(i)
 		valid_moves = new_valid_moves
+	
+	var valid_and_constrained_moves_intersection = []
+	for move in valid_moves:
+		var move_is_in_each_vector = true
+		for sub_array in boardSprite.current_player_king.confirmed_attack_vectors:
+			if move not in sub_array:
+				move_is_in_each_vector = false
+				break
+		if move_is_in_each_vector:
+			valid_and_constrained_moves_intersection.append(move)
+	valid_moves = valid_and_constrained_moves_intersection
+	
 
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
