@@ -24,7 +24,7 @@ enum Player{
 #Deubg
 #var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 #var startingBoard = "k8/9/9/9/8b/6n2/9/4K4/9 w - 1"
-var startingBoard = "k8/4Kg3/9/9/9/9/9/7P1/9 b 2R2B2G2S2N2L2P2r2b2g2s2n2l2p 1"
+var startingBoard = "k8/9/9/4g4/9/2g1K1g2/r8/9/8R w 3p 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -55,6 +55,8 @@ var allMovesGoteIgnoreKing = []
 var allMovesAfterCapture = []
 var current_player_king
 var current_player_king_threats = []
+var opponent_player_king
+var opponent_player_king_threats = []
 var senteInCheck = false
 var goteInCheck = false
 var isPromoting = false
@@ -79,7 +81,6 @@ func _ready():
 	#print(pieceData)
 	#print(piecesOnBoard)
 	#print(current_player_king_threats)
-	#call_deferred("deferred_print",current_player_king_threats)
 
 func _on_turn_started():
 	current_player_king = instance_from_id(pieceData[piecesOnBoard.find(find_king(playerTurn)[0])][2])
@@ -87,9 +88,6 @@ func _on_turn_started():
 	current_player_king.check_attack_vectors(current_player_king.currentPosition,playerTurn)
 	call_deferred("get_all_moves_for_player",Player.Sente,null,null,true,true)
 	call_deferred("get_all_moves_for_player",Player.Gote,null,null,true,true)
-	
-func deferred_print(value):
-	print(value)
 	
 func _on_turn_ended():
 	playerTurn = Player.Gote if playerTurn == Player.Sente else Player.Sente

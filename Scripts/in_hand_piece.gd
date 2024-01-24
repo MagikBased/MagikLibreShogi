@@ -93,6 +93,7 @@ func get_valid_moves():
 	pawnsIndex = []
 	pawnsRemovalIndex = []
 	valid_moves = []
+
 	for  x in range(1,boardSprite.boardSize.x + 1):
 		for y in range(1,boardSprite.boardSize.y + 1):
 			var pos = Vector2(x,y)
@@ -110,6 +111,9 @@ func get_valid_moves():
 					pawnsRemovalIndex.append(j)
 		for each in pawnsRemovalIndex:
 			valid_moves.erase(each)
+		var checkmate_king = check_pawn_drop_checkmate()
+		if checkmate_king != null:
+			valid_moves.remove_at(valid_moves.find(checkmate_king))
 	if pieceType == PieceType.Knight and pieceOwner == Player.Sente:
 		var new_valid_moves = []
 		for i in valid_moves:
@@ -129,6 +133,9 @@ func get_valid_moves():
 					pawnsRemovalIndex.append(j)
 		for each in pawnsRemovalIndex:
 			valid_moves.erase(each)
+		var checkmate_king = check_pawn_drop_checkmate()
+		if checkmate_king != null:
+			valid_moves.remove_at(valid_moves.find(checkmate_king))
 	if pieceType == PieceType.Knight and pieceOwner == Player.Gote:
 		var new_valid_moves = []
 		for i in valid_moves:
@@ -147,6 +154,42 @@ func get_valid_moves():
 			valid_and_constrained_moves_intersection.append(move)
 	valid_moves = valid_and_constrained_moves_intersection
 	
+func check_pawn_drop_checkmate():
+	var opponent
+	var opponent_king
+	if pieceOwner == Player.Sente:
+		opponent = Player.Gote
+	else:
+		opponent = Player.Sente
+	var move_direction
+	if opponent == Player.Sente:
+		move_direction = -1
+	else:
+		move_direction = 1
+	
+	for i in range(len(boardSprite.pieceData)):
+		if boardSprite.pieceData[i][0] == PieceType.King and boardSprite.pieceData[i][1] == opponent:
+			opponent_king = instance_from_id(boardSprite.pieceData[i][2])
+			break
+	var adjacent_squares = []
+	var opponent_king_position = opponent_king.currentPosition
+	var surronding_squares = [
+	Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
+	Vector2(-1,  0),               Vector2(1,  0),
+	Vector2(-1,  1), Vector2(0,  1), Vector2(1,  1)]
+	for square in surronding_squares:
+		var adjacent_position = opponent_king_position + square
+		if is_inside_board(adjacent_position):
+			adjacent_squares.append(adjacent_position)
+	if pieceOwner == Player.Sente:
+		for move in adjacent_squares:
+			if move not in boardSprite.allMovesSente:
+				return
+	else:
+		for move in adjacent_squares:
+			if move not in boardSprite.allMovesGote:
+				return
+	return opponent_king_position + Vector2(0,move_direction)
 
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
@@ -186,4 +229,6 @@ func update_pieces():
 		spriteNode.modulate = Color(1,1,1,1)
 	elif pieceCount == 0:
 		spriteNode.modulate = Color(1,1,1,0.3)
-		
+
+func is_inside_board(move):
+	return(move.x > 0 and move.x <= boardSprite.boardSize.x and move.y > 0 and move.y <= boardSprite.boardSize.y)
