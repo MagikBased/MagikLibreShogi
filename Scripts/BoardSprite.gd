@@ -217,7 +217,7 @@ func get_all_moves_after_capture(player, capturePos):
 	allMovesAfterCapture = []
 	var gamePieces = []
 	var _capturePieceIndex
-	_capturePieceIndex = piecesOnBoard.find(capturePos)
+	_capturePieceIndex = piecesOnBoard.find(capturePos) #is this variable needed?
 	for piece in pieceData:
 		if player == Player.Sente:
 			if piece[1] == Player.Sente:

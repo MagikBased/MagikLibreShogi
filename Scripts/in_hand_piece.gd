@@ -181,15 +181,40 @@ func check_pawn_drop_checkmate():
 		var adjacent_position = opponent_king_position + square
 		if is_inside_board(adjacent_position):
 			adjacent_squares.append(adjacent_position)
+	var opponent_moves = get_all_moves_except_king_for_player()
 	if pieceOwner == Player.Sente:
 		for move in adjacent_squares:
-			if move not in boardSprite.allMovesSente:
+			if move in opponent_moves:
 				return
 	else:
 		for move in adjacent_squares:
-			if move not in boardSprite.allMovesGote:
+			if move in opponent_moves:
 				return
 	return opponent_king_position + Vector2(0,move_direction)
+
+func get_all_moves_except_king_for_player():
+	var opponent
+	var opponent_pieces_location = []
+	var opponent_pieces = []
+	var opponent_moves = []
+	if pieceOwner == Player.Sente:
+		opponent = Player.Gote
+		opponent_pieces_location = boardSprite.gotePiecesOnBoard
+	else:
+		opponent = Player.Sente
+		opponent_pieces_location = boardSprite.sentePiecesOnBoard
+	
+	for piece in opponent_pieces_location:
+		var piece_index
+		piece_index = boardSprite.piecesOnBoard.find(piece)
+		if boardSprite.pieceData[piece_index][0] != 0:
+			opponent_pieces.append(instance_from_id(boardSprite.pieceData[piece_index][2]))
+	for piece in opponent_pieces:
+		for move in piece.valid_moves:
+			if move not in opponent_moves:
+				opponent_moves.append(move)
+	return opponent_moves
+	
 
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
