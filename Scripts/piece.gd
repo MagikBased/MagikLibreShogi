@@ -26,6 +26,7 @@ enum Player{
 @onready var globalPieceScale = (boardSprite.texture.get_width() * boardSprite.scale.x) / (boardSprite.boardSize.x * texture.get_width())
 var sente_shader = preload("res://Shaders/piece.gdshader")
 @onready var selection_highlight = $selection_highlight
+@onready var moved_from_square_highlight = $moved_from_square_highlight
 @onready var boardPosition = board.global_position
 
 @export var pieceType = PieceType.Pawn
@@ -72,6 +73,7 @@ func _ready():
 	scale *= globalPieceScale
 	set_piece_type()
 	snap_to_grid()
+	moved_from_square_highlight.visible = false
 	if pieceOwner == Player.Gote:
 		rotation_degrees += 180
 	else:
@@ -443,6 +445,7 @@ func move_piece(file,rank):
 	elif pieceOwner == Player.Gote:
 		boardSprite.gotePiecesOnBoard.append(currentPosition) # adds the moving to position into the array
 	snap_to_grid()
+	moved_from_square_highlight.moved_from = Vector2(file,rank)
 	if can_promote(origin.y,destination.y):
 		if (pieceOwner == Player.Sente and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 1) or (pieceType == PieceType.Knight and destination.y <= 2))) or (pieceOwner == Player.Gote and (((pieceType == PieceType.Pawn or pieceType == PieceType.Lance) and destination.y == 9) or (pieceType == PieceType.Knight and destination.y >= 8))):
 			promoted = true
@@ -463,6 +466,9 @@ func move_piece(file,rank):
 	queue_redraw()
 	boardSprite.is_in_check(Player.Sente)
 	boardSprite.is_in_check(Player.Gote)
+
+func update_move_indicators():
+	pass
 
 func capture_piece(file,rank):
 	var indexToRemove =  boardSprite.piecesOnBoard.find(Vector2(file,rank))
