@@ -68,6 +68,7 @@ var inHandSente = inHand.instantiate()
 var inHandGote = inHand.instantiate()
 
 var sfenManagerScript = load("res://Scenes/sfen_notation_manager.tscn")
+var portable_game_notation_manager = load("res://Scenes/portable_game_notation_manager.tscn")
 
 signal turnStart(player)
 signal turnEnd(player)
@@ -134,6 +135,8 @@ func board_setup():
 	get_parent().add_child.call_deferred(inHandGote)
 	inHandGote.position = Vector2(0,0)
 	inHandGote.handOwner = Player.Gote
+	
+	var pgn_manager = portable_game_notation_manager.instantiate()
 	
 	var sfen_manager = sfenManagerScript.instantiate()
 	add_child(sfen_manager)
