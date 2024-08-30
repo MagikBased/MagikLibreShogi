@@ -22,9 +22,10 @@ enum Player{
 }
 
 #Deubg
-#var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+var startingBoard = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 #var startingBoard = "k8/9/9/9/8b/6n2/9/4K4/9 w - 1"
-var startingBoard = "k8/9/9/4g4/9/2g1K1g2/r8/9/8R w 3p 1"
+#var startingBoard = "k8/9/9/4g4/9/2g1K1g2/r8/9/8R w 3p 1"
+#var startingBoard = "4k4/9/9/9/9/9/9/9/4K4 b 2R2Brbgsnlp 1"
 
 @export var boardSize = Vector2(9, 9)
 var lineSize = 8 #should be divisible by 4 for even lines
@@ -70,8 +71,14 @@ var inHandGote = inHand.instantiate()
 var sfenManagerScript = load("res://Scenes/sfen_notation_manager.tscn")
 var portable_game_notation_manager = load("res://Scenes/portable_game_notation_manager.tscn")
 
+var sfen_manager
+
 signal turnStart(player)
 signal turnEnd(player)
+
+var isTsumeMode = false
+var currentPuzzle = {}
+var puzzleStep =0
 
 func _ready():
 	board_setup()
@@ -136,14 +143,17 @@ func board_setup():
 	inHandGote.position = Vector2(0,0)
 	inHandGote.handOwner = Player.Gote
 	
-	var pgn_manager = portable_game_notation_manager.instantiate()
+	#var pgn_manager = portable_game_notation_manager.instantiate()
 	
-	var sfen_manager = sfenManagerScript.instantiate()
+	sfen_manager = sfenManagerScript.instantiate()
 	add_child(sfen_manager)
 	sfen_manager.scale *= 4
 	sfen_manager.position = Vector2 (texture.get_width() + (xMargin * 6 * sfen_manager.scale.x),0)
 	#lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
-	sfen_manager.create_board_from_sfen(startingBoard)
+	if !isTsumeMode:
+		sfen_manager.create_board_from_sfen(startingBoard)
+	else:
+		pass
 
 func create_piece(piece_name,piece_owner,starting_position, promoted = false):
 	var piece_scene = load("res://Scenes/piece.tscn")
@@ -273,7 +283,7 @@ func is_in_check(player):
 			goteInCheck = true
 		else:
 			goteInCheck = false
-		#print("Is in check? " + str(goteInCheck))
+		print("Is in check? " + str(goteInCheck))
 
 func clear_board():
 	for piece in get_parent().get_children():
@@ -291,3 +301,10 @@ func clear_board():
 	inHandGote.update_in_hand(-1,0)
 	inHandSente.piecesInHand = [0,0,0,0,0,0,0]
 	inHandGote.piecesInHand = [0,0,0,0,0,0,0]
+
+func start_tsume_puzzle(puzzle_data):
+	isTsumeMode = true
+	currentPuzzle = puzzle_data
+	puzzleStep = 0
+	sfen_manager.create_board_from_sfen(currentPuzzle["start_sfen"])
+	call_deferred("emit_signal","turnStart")

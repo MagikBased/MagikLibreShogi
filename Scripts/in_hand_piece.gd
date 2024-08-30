@@ -23,6 +23,7 @@ var pieceCount = 0
 
 @onready var board = get_parent().get_parent()
 @onready var boardSprite = board.get_node("BoardSprite")
+@onready var count_label = $PieceCount
 
 var valid_moves = []
 var pawns = []
@@ -32,6 +33,13 @@ var pawnsRemovalIndex = []
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 @onready var globalPieceScale = (boardSprite.texture.get_width() * boardSprite.scale.x) / (boardSprite.boardSize.x * spriteNode.texture.get_width())
 
+@onready var audio_player = $AudioStreamPlayer2D
+@export var move_sounds = [
+	preload("res://Sounds/PieceSnap/shogisnap1.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap2.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap3.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap4.mp3")
+]
 
 func _ready():
 	scale *= globalPieceScale
@@ -142,7 +150,8 @@ func get_valid_moves():
 			if i.y < 8:
 				new_valid_moves.append(i)
 		valid_moves = new_valid_moves
-	
+	#print("before" ,valid_moves)
+	#print(boardSprite.current_player_king.confirmed_attack_vectors)
 	var valid_and_constrained_moves_intersection = []
 	for move in valid_moves:
 		var move_is_in_each_vector = true
@@ -152,7 +161,9 @@ func get_valid_moves():
 				break
 		if move_is_in_each_vector:
 			valid_and_constrained_moves_intersection.append(move)
+		#print("constraints ",valid_and_constrained_moves_intersection)
 	valid_moves = valid_and_constrained_moves_intersection
+	#print("after ",valid_moves)
 	
 func check_pawn_drop_checkmate():
 	var opponent
@@ -193,15 +204,15 @@ func check_pawn_drop_checkmate():
 	return opponent_king_position + Vector2(0,move_direction)
 
 func get_all_moves_except_king_for_player():
-	var opponent
+	#var opponent
 	var opponent_pieces_location = []
 	var opponent_pieces = []
 	var opponent_moves = []
 	if pieceOwner == Player.Sente:
-		opponent = Player.Gote
+		#opponent = Player.Gote
 		opponent_pieces_location = boardSprite.gotePiecesOnBoard
 	else:
-		opponent = Player.Sente
+		#opponent = Player.Sente
 		opponent_pieces_location = boardSprite.sentePiecesOnBoard
 	
 	for piece in opponent_pieces_location:
@@ -214,7 +225,6 @@ func get_all_moves_except_king_for_player():
 			if move not in opponent_moves:
 				opponent_moves.append(move)
 	return opponent_moves
-	
 
 func get_all_pawn_ranks():
 	if pieceOwner == Player.Sente:
@@ -238,6 +248,9 @@ func destroy_all_highlights():
 func drop_piece(file,rank):
 	boardSprite.create_piece(pieceType, pieceOwner, Vector2(file,rank))
 	destroy_all_highlights()
+	var random_index = randi() % 4 
+	audio_player.stream = move_sounds[random_index]  # Set the randomly selected sound
+	audio_player.play()
 	if pieceOwner == Player.Sente:
 		boardSprite.inHandSente.update_in_hand(pieceType,-1)
 		boardSprite.call_deferred("emit_signal","turnEnd")
@@ -250,6 +263,7 @@ func drop_piece(file,rank):
 		queue_redraw()
 
 func update_pieces():
+	count_label.text = str(pieceCount)
 	if pieceCount > 0:
 		spriteNode.modulate = Color(1,1,1,1)
 	elif pieceCount == 0:

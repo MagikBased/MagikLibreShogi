@@ -68,6 +68,13 @@ var adjacentSquares = [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1),Vec
 var squareHighlight = load("res://Scenes/square_highlight.tscn")
 var promotionWindow = load("res://Scenes/promotion_window.tscn")
 
+@export var move_sounds = [
+	preload("res://Sounds/PieceSnap/shogisnap1.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap2.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap3.mp3"),
+	preload("res://Sounds/PieceSnap/shogisnap4.mp3")
+]
+@onready var audio_player = $AudioStreamPlayer2D
 
 func _ready():
 	scale *= globalPieceScale
@@ -463,6 +470,9 @@ func move_piece(file,rank):
 		destroy_all_highlights()
 		selected = false
 		valid_moves = []
+	var random_index = randi() % 4 
+	audio_player.stream = move_sounds[random_index]  # Set the randomly selected sound
+	audio_player.play()
 	queue_redraw()
 	boardSprite.is_in_check(Player.Sente)
 	boardSprite.is_in_check(Player.Gote)
@@ -685,59 +695,67 @@ func check_nonswinging_attack_vectors_directions_and_piece(start_pos, direction,
 	
 	return king_threats
 
-func check_swinging_attack_vectors_directions_and_piece(start_pos, direction,player, threatening_pieces):
+func check_swinging_attack_vectors_directions_and_piece(start_pos, direction, player, threatening_pieces):
 	var king_threats = []
 	var alliedPiecesInPath = []
 	var currentSpace = start_pos + direction
 	var opponent = Player.Gote if player == Player.Sente else Player.Sente
-	
 	var alliedPieceIndex
 	var alliedPiece 
-	
 	var threatenedSpaces = []
 	var spacesChecked = []
-	
+	var isBlocked = false 
+	#print(boardSprite.playerTurn)
+	#print(start_pos, direction, player)
 	while is_inside_board(currentSpace):
 		spacesChecked.append(currentSpace)
 		if boardSprite.piecesOnBoard.has(currentSpace):
 			var pieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
-			if boardSprite.pieceData[pieceIndex][1] == player:
+			var found_piece_owner = boardSprite.pieceData[pieceIndex][1]
+			if found_piece_owner == player:
+				# An allied piece is found, it blocks the attack
 				alliedPiecesInPath.append(currentSpace)
+				print("current space: ",currentSpace)
 				if alliedPiecesInPath.size() == 1:
 					alliedPieceIndex = boardSprite.piecesOnBoard.find(currentSpace)
 					alliedPiece = instance_from_id(boardSprite.pieceData[alliedPieceIndex][2])
+					#print("current space ",currentSpace)
+					#print("Allied piece position:", alliedPiece.currentPosition)
 				else:
 					alliedPieceIndex = null
-			elif boardSprite.pieceData[pieceIndex][1] == opponent:
+				isBlocked = true 
+				break
+			elif found_piece_owner == opponent:
 				if boardSprite.pieceData[pieceIndex][0] in threatening_pieces:
-					king_threats.append(currentSpace)
-					threatenedSpaces = spacesChecked
-					#print("spaces checked ",spacesChecked)
+					if not isBlocked:
+						king_threats.append(currentSpace)
+						threatenedSpaces = spacesChecked
 					break
 		currentSpace += direction
-	if alliedPiecesInPath.size() == 1:
+	if alliedPiecesInPath.size() == 1 and not isBlocked:
 		if alliedPiece != null:
 			for space in threatenedSpaces:
 				alliedPiece.constrained_moves.append(space)
-	if direction == Vector2(0, -1) and king_threats != []:
-		vertical_north = spacesChecked
-	if direction == Vector2(1, -1) and king_threats != []:
-		diagonal_northeast = spacesChecked
-	if direction == Vector2(1, 0) and king_threats != []:
-		horizontal_east = spacesChecked
-	if direction == Vector2(1, 1) and king_threats != []:
-		diagonal_southeast = spacesChecked
-	if direction == Vector2(0, 1) and king_threats != []:
-		vertical_south = spacesChecked
-	if direction == Vector2(-1, 1) and king_threats != []:
-		diagonal_southwest = spacesChecked
-	if direction == Vector2(-1, 0) and king_threats != []:
-		horizontal_west = spacesChecked
-	if direction == Vector2(-1, -1) and king_threats != []:
-		diagonal_northwest = spacesChecked
-	#if king_threats != []:
-	#print("Threats: " + str(king_threats))
+	if not isBlocked:
+		if direction == Vector2(0, -1) and king_threats != []:
+			vertical_north = spacesChecked
+		if direction == Vector2(1, -1) and king_threats != []:
+			diagonal_northeast = spacesChecked
+		if direction == Vector2(1, 0) and king_threats != []:
+			horizontal_east = spacesChecked
+		if direction == Vector2(1, 1) and king_threats != []:
+			diagonal_southeast = spacesChecked
+		if direction == Vector2(0, 1) and king_threats != []:
+			vertical_south = spacesChecked
+		if direction == Vector2(-1, 1) and king_threats != []:
+			diagonal_southwest = spacesChecked
+		if direction == Vector2(-1, 0) and king_threats != []:
+			horizontal_west = spacesChecked
+		if direction == Vector2(-1, -1) and king_threats != []:
+			diagonal_northwest = spacesChecked
+	
 	return king_threats
+
 
 func clear_attack_vectors():
 	confirmed_attack_vectors = []
@@ -759,6 +777,8 @@ func clear_attack_vectors():
 	northwest = []
 	knighteast = []
 	knightwest = []
+	#print("attack vectors cleared")
+	#print(boardSprite.current_player_king.confirmed_attack_vectors)
 
 func deferred_print(value):
 	print(value)

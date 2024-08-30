@@ -16,3 +16,5 @@ script = ExtResource("3_nd1uv")
 z_index = -1
 script = ExtResource("3_nd1uv")
 moved_indicator_highlight = true
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]

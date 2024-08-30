@@ -30,7 +30,7 @@ var piecesInHand = [0,0,0,0,0,0,0] #P,L,N,S,G,B,R
 @onready var board = get_parent()
 @onready var boardSprite = board.get_node("BoardSprite")
 
-var xMargin = 25
+var xMargin = 35
 @onready var rectHeight = boardSprite.texture.get_height() * boardSprite.scale.y
 @onready var rectWidth =  boardSprite.texture.get_height() * boardSprite.scale.x / 7
 @onready var rect = Rect2(xMargin, 0,rectWidth,rectHeight)
