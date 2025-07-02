@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bbchq40v608y"]
 
-[ext_resource type="Script" path="res://Scripts/in_hand_piece.gd" id="1_gt36t"]
+[ext_resource type="Script" uid="uid://8062cfcbis0v" path="res://Scripts/in_hand_piece.gd" id="1_gt36t"]
 [ext_resource type="Texture2D" uid="uid://l3dfard0n1ln" path="res://Images/Pieces/Pawn.png" id="1_uh063"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c7h1y"]

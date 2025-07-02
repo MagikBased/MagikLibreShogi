@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cs3ju13v12r11"]
 
-[ext_resource type="Script" path="res://Scripts/portable_game_notation_manager.gd" id="1_j4whi"]
+[ext_resource type="Script" uid="uid://gvkf4gqkiy7s" path="res://Scripts/portable_game_notation_manager.gd" id="1_j4whi"]
 
 [node name="PortableGameNotationManager" type="Control"]
 layout_mode = 3

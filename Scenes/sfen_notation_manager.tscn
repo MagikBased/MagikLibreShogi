@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b5fkp6b8ocdq7"]
 
-[ext_resource type="Script" path="res://Scripts/sfen_notation_manager.gd" id="1_bmo0a"]
+[ext_resource type="Script" uid="uid://cu5lmwwoj18a8" path="res://Scripts/sfen_notation_manager.gd" id="1_bmo0a"]
 
 [node name="SFEN_notation_manager" type="Node2D"]
 script = ExtResource("1_bmo0a")
